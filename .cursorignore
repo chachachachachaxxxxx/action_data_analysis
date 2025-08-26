@@ -1,0 +1,36 @@
+# Python/通用缓存与环境
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# 构建产物
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# 编辑器与系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 版本控制与工具
+.git/
+.cursor/
+
+# 项目可能的大文件目录
+data/
+logs/
+.cache/
+docs/_build/
+# 外部数据集（Windows 绝对路径与容错）
+D:\data\raw_action_dataset\FineSports_trimmed_video_frames\NewFrames/
+D:/data/raw_action_dataset/FineSports_trimmed_video_frames/NewFrames/
+FineSports_trimmed_video_frames/NewFrames/
+
