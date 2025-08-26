@@ -1,0 +1,55 @@
+---
+description: 生成或审校提交信息以符合 Conventional Commits 并便于 git-cliff 解析
+globs:
+alwaysApply: false
+---
+
+# Git 提交信息规范（Conventional Commits）
+
+## 使用场景
+- 需要编写/修正提交信息，使其可被工具解析并生成 changelog。
+
+## 关键规则
+- 基本格式：`<type>(<scope>): <subject>`；可选 `<body>`、`<footer>`；
+- type：feat | fix | docs | perf | refactor | style | test | chore；
+- scope：api | data | metrics | inference | utils | config | scripts | docs | ci | build | deps；
+- 语言：`subject` 与 `body` 尽量使用中文；`type`、`scope`、`footer` 保持英文关键字；中英文均不要在 `subject` 末尾加句号；
+- subject：若使用英文，动词开头、一般现在时、首字母小写；若使用中文，使用动词短语，避免冗长与标点；
+- 空行：`subject` 与 `body` 间 1 行，`body` 与 `footer` 间 1 行；
+- 破坏性：`type!` + `BREAKING CHANGE:`；
+- Issue：在 `footer` 使用 `Closes #123` / `Fixes #456`。
+
+## 示例
+<example>
+  ```
+  feat(api): add number parser for single-field input
+  ```
+</example>
+<example>
+  ```
+  fix(data): handle leading zeros in jersey strings
+  ```
+</example>
+<example>
+  ```
+  docs(readme): 初始化项目说明与协作规则
+
+  - 介绍目录结构与最小使用示例
+  - 说明 AI 协作规则与提交规范
+  ```
+</example>
+<example>
+  ```
+  chore(build): 初始化项目骨架与质量闸门
+
+  - 添加 pyproject/ruff/black/mypy/pytest 配置
+  - 配置 CI 工作流与 Makefile 任务
+
+  Closes #123
+  ```
+</example>
+<example type="invalid">
+  ```
+  修复了登录bug。
+  ```
+</example>
