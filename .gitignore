@@ -1,3 +1,101 @@
+# ---- Python 通用 ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# ---- 构建/打包产物 ----
+build/
+dist/
+develop-eggs/
+eggs/
+.eggs/
+parts/
+sdist/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ---- 虚拟环境/解释器 ----
+.venv/
+venv/
+env/
+.env
+.env.*
+.python-version
+
+# ---- 测试/类型检查/工具缓存 ----
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.cache/
+coverage.xml
+
+# ---- Jupyter / 临时文件 ----
+.ipynb_checkpoints/
+*.swp
+*.swo
+*.tmp
+tmp/
+temp/
+
+# ---- IDE / 系统文件 ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---- 项目生成输出 ----
+output/
+
+# 如果只需忽略打包后的归档，可改为：
+# output/*.tar.gz
+# output/**/*.json
+
+# ---- 数据集标注与生成结果（避免提交大体量或私有数据）----
+# FineSports
+datasets/finesports/annotations/
+datasets/finesports/results/
+
+# MultiSports
+datasets/multisports/annotations/
+datasets/multisports/annotations_basketball/
+datasets/multisports/results/
+
+# SpaceJam
+datasets/spacejam/annotation/
+datasets/spacejam/results/
+
+# SportsHHI
+datasets/sportshhi/annotations/
+datasets/sportshhi/basketball_annotations/
+datasets/sportshhi/results/
+datasets/sportshhi/results_basketball/
+
+# ---- 文档构建产物（如有）----
+docs/_build/
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.mypy_cache/
+.pytest_cache/
+*.DS_Store
+multisports/results/
+annotations_basketball/
+multisports/annotations_basketball/
 __pycache__/
 *.py[cod]
 .pytest_cache/
