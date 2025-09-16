@@ -13,7 +13,7 @@ Notes:
 USAGE
 }
 
-OUT_DIR="/storage/wangxinxing/code/action_data_analysis/output/test_output2"
+OUT_DIR="/storage/wangxinxing/code/action_data_analysis/output/test_output22"
 ARGS=()
 
 while [[ $# -gt 0 ]]; do

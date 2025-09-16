@@ -43,6 +43,77 @@ def _discover_leaf_folders(paths: List[str]) -> List[str]:
   return sorted(list(dict.fromkeys(leafs)))
 
 
+def _folder_has_json(folder: str) -> bool:
+  try:
+    for name in os.listdir(folder):
+      if name.lower().endswith('.json'):
+        return True
+  except Exception:
+    return False
+  return False
+
+
+def _is_std_root(path: str) -> bool:
+  return os.path.isdir(path) and os.path.isdir(os.path.join(path, 'videos'))
+
+
+def _discover_std_sample_folders(paths: List[str]) -> List[str]:
+  """发现 std 数据集的样例目录：<root>/videos/*。
+
+  规则：
+  - 若传入 std 根目录（包含 videos 子目录），则返回其中所有包含 JSON 的直接子目录；
+  - 若传入的是 videos 目录本身，则返回其中所有包含 JSON 的直接子目录；
+  - 若传入路径位于 .../videos/* 下，且该目录包含 JSON，则直接返回该目录；
+  - 否则，若 <path>/videos 存在，则按 std 根目录处理。
+  """
+  result: List[str] = []
+  seen = set()
+
+  def _add_unique(dir_path: str) -> None:
+    ap = os.path.abspath(dir_path)
+    if ap not in seen:
+      seen.add(ap)
+      result.append(ap)
+
+  for p in paths:
+    if not os.path.isdir(p):
+      continue
+    p_abs = os.path.abspath(p)
+    base = os.path.basename(os.path.normpath(p_abs))
+
+    # case: videos/* (sample folder)
+    parts = p_abs.split(os.sep)
+    if len(parts) >= 2 and parts[-2] == 'videos' and os.path.isdir(p_abs):
+      if _folder_has_json(p_abs):
+        _add_unique(p_abs)
+      continue
+
+    # case: std root or any dir that has a 'videos' subdir
+    if _is_std_root(p_abs) or os.path.isdir(os.path.join(p_abs, 'videos')):
+      videos_dir = os.path.join(p_abs, 'videos')
+      try:
+        for name in os.listdir(videos_dir):
+          sub = os.path.join(videos_dir, name)
+          if os.path.isdir(sub) and _folder_has_json(sub):
+            _add_unique(sub)
+      except Exception:
+        pass
+      continue
+
+    # case: p itself is 'videos' directory
+    if base == 'videos' and os.path.isdir(p_abs):
+      try:
+        for name in os.listdir(p_abs):
+          sub = os.path.join(p_abs, name)
+          if os.path.isdir(sub) and _folder_has_json(sub):
+            _add_unique(sub)
+      except Exception:
+        pass
+      continue
+
+  return sorted(result)
+
+
 def export_samples_with_context(
   folders: List[str],
   output_root: str,

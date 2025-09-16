@@ -63,15 +63,13 @@ output/
 # FineSports
 datasets/finesports/annotations/
 datasets/finesports/results/
-
 # MultiSports
 datasets/multisports/annotations/
 datasets/multisports/annotations_basketball/
 datasets/multisports/results/
 
 # SpaceJam
-datasets/spacejam/annotation/
-datasets/spacejam/results/
+datasets/spacejam
 
 # SportsHHI
 datasets/sportshhi/annotations/

@@ -6,9 +6,7 @@ set -euo pipefail
 usage() {
   cat <<'USAGE'
 Usage:
-  scripts/export_merged_samples.sh \
-    --multisports-root /abs/path/to/MultiSports_json \
-    --fine-root /abs/path/to/FineSports_json \
+  scripts/export_merged_samples_sportshhi.sh \
     --sportshhi-root /abs/path/to/SportsHHI_json \
     --out-json /abs/path/to/output/json \
     --out-merged /abs/path/to/output/merged \
@@ -16,12 +14,10 @@ Usage:
 
 Notes:
   - 每类采样 N=3，前后各扩展 K=6 帧（总 13 帧），不足则用全部
-  - 先分别导出到 output/json/{MultiSports,FineSports,SportsHHI}，再平铺合并到 output/merged
+  - 先导出到 output/json/SportsHHI，再平铺合并到 output/merged
 USAGE
 }
 
-MULTISPORTS_ROOT=""
-FINE_ROOT=""
 SPORTSHHI_ROOT=""
 OUT_JSON="/storage/wangxinxing/code/action_data_analysis/output/json"
 OUT_MERGED="/storage/wangxinxing/code/action_data_analysis/output/merged"
@@ -30,8 +26,6 @@ CONTEXT="6"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --multisports-root) MULTISPORTS_ROOT="$2"; shift 2;;
-    --fine-root) FINE_ROOT="$2"; shift 2;;
     --sportshhi-root) SPORTSHHI_ROOT="$2"; shift 2;;
     --out-json) OUT_JSON="$2"; shift 2;;
     --out-merged) OUT_MERGED="$2"; shift 2;;
@@ -42,27 +36,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$MULTISPORTS_ROOT" || -z "$FINE_ROOT" || -z "$SPORTSHHI_ROOT" ]]; then usage; exit 1; fi
+if [[ -z "$SPORTSHHI_ROOT" ]]; then usage; exit 1; fi
 
 mkdir -p "$OUT_JSON" "$OUT_MERGED"
 
-# 1) MultiSports
-scripts/export_samples.sh \
-  --out "$OUT_JSON" \
-  --dataset-name MultiSports \
-  --per-class "$PER_CLASS" \
-  --context "$CONTEXT" \
-  "$MULTISPORTS_ROOT"
-
-# 2) FineSports
-scripts/export_samples.sh \
-  --out "$OUT_JSON" \
-  --dataset-name FineSports \
-  --per-class "$PER_CLASS" \
-  --context "$CONTEXT" \
-  "$FINE_ROOT"
-
-# 3) SportsHHI
+# 1) SportsHHI
 scripts/export_samples.sh \
   --out "$OUT_JSON" \
   --dataset-name SportsHHI \
@@ -70,10 +48,11 @@ scripts/export_samples.sh \
   --context "$CONTEXT" \
   "$SPORTSHHI_ROOT"
 
-# 4) Merge flatten
+# 2) Merge flatten (single dataset)
 PYTHONPATH="${PYTHONPATH:-}:src" python -m action_data_analysis.cli.main merge-flatten \
-  "$OUT_JSON"/MultiSports "$OUT_JSON"/FineSports "$OUT_JSON"/SportsHHI \
+  "$OUT_JSON"/SportsHHI \
   --out "$OUT_MERGED"
 
-echo "Done. Exported to $OUT_JSON and merged to $OUT_MERGED"
+echo "Done. Exported SportsHHI to $OUT_JSON and merged to $OUT_MERGED"
+
 

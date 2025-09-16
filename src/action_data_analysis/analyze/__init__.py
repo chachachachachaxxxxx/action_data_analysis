@@ -1,1 +1,1 @@
-__all__ = ["visual", "stats"]
+__all__ = ["visual", "stats", "overlap"]
