@@ -14,6 +14,7 @@ from action_data_analysis.io.json import (
   extract_bbox_and_action,
   read_labelme_json,
 )
+from tqdm import tqdm
 
 
 def _ensure_dir(path: str) -> None:
@@ -79,6 +80,8 @@ def visualize_samples_with_context(
   _ensure_dir(output_dir)
   picked = sample_per_class_examples(folders, per_class=per_class)
 
+  total_items = sum(len(v) for v in picked.values())
+  pbar = tqdm(total=total_items, desc="visualize", unit="item")
   for act, items in picked.items():
     act_dir = os.path.join(output_dir, act or "unknown")
     _ensure_dir(act_dir)
@@ -116,6 +119,11 @@ def visualize_samples_with_context(
             pass
         # 仅输出绘制后的图像，保持原文件名
         cv2.imwrite(os.path.join(sample_dir, f), img_draw)
+      pbar.update(1)
+  try:
+    pbar.close()
+  except Exception:
+    pass
 
 
 def visualize_dataset(json_or_csv_path: str, output_dir: str) -> None:  # 兼容旧骨架 API

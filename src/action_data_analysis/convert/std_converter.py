@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List
 import shutil
 import os
+from tqdm import tqdm
 
 from .label_map_converter import convert_dataset_dir, ConversionStats
 
@@ -87,6 +88,7 @@ def convert_std_dataset(std_root: str | Path, mapping_csv: str | Path, out_root:
   samples_converted = 0
   samples_deleted_after = 0
 
+  pbar = tqdm(total=len(samples), desc="convert std", unit="sample")
   for sdir in samples:
     # Count json files before
     json_before = len(list(sdir.rglob("*.json")))
@@ -119,6 +121,15 @@ def convert_std_dataset(std_root: str | Path, mapping_csv: str | Path, out_root:
       if copy_images:
         imgs_copied += _copy_all_images(sdir, target_sample_dir)
       samples_converted += 1
+    try:
+      pbar.update(1)
+    except Exception:
+      pass
+
+  try:
+    pbar.close()
+  except Exception:
+    pass
 
   return StdConversionSummary(
     source_root=str(std_root.resolve()),

@@ -5,6 +5,7 @@ from collections import Counter
 import os
 
 import numpy as np
+from tqdm import tqdm
 
 from action_data_analysis.io.json import (
   iter_labelme_dir,
@@ -214,6 +215,7 @@ def compute_aggregate_overlaps(folders: List[str], thresholds: List[float] | Non
   per_action_pair_counts_ge: Dict[float, Counter[Tuple[str, str]]] = {float(t): Counter() for t in thresholds}
   degree_hist_by_t: Dict[float, Counter[int]] = {float(t): Counter() for t in thresholds}
 
+  pbar = tqdm(total=len(folders), desc="overlaps", unit="folder")
   for folder in folders:
     s = compute_folder_overlaps(folder, thresholds)
     total_num_images += int(s.get("basic", {}).get("num_images", 0))
@@ -272,6 +274,10 @@ def compute_aggregate_overlaps(folders: List[str], thresholds: List[float] | Non
             per_action_pair_counts_ge[t][key] += 1
         for act_name in seen_action_this_frame:
           per_action_frames_with_overlaps_ge[t][act_name] += 1
+    try:
+      pbar.update(1)
+    except Exception:
+      pass
 
   hist_bins = [i / 10.0 for i in range(11)]
   hist_counts = [0 for _ in range(10)]
@@ -320,6 +326,10 @@ def compute_aggregate_overlaps(folders: List[str], thresholds: List[float] | Non
     },
     "per_frame_max_iou": _quantiles(per_frame_max_iou_vals),
   }
+  try:
+    pbar.close()
+  except Exception:
+    pass
   return stats
 
 

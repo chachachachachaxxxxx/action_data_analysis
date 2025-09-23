@@ -6,6 +6,7 @@ import os
 import math
 
 import numpy as np
+from tqdm import tqdm
 
 from action_data_analysis.io.json import (
   iter_labelme_dir,
@@ -116,6 +117,8 @@ def compute_labelme_folder_stats(folder: str) -> Dict[str, Any]:
   num_images = len([f for f in os.listdir(folder) if f.lower().endswith((".jpg", ".jpeg"))])
 
   # 遍历该目录下全部 LabelMe JSON
+  total_json = len([f for f in os.listdir(folder) if f.lower().endswith('.json')])
+  pbar = tqdm(total=total_json, desc="analyze folder", unit="json")
   # 先收集帧序列与 shape 元信息，便于时空管统计
   frames: List[Tuple[int, List[Tuple[str, str]]]] = []  # (frame_idx, [(track_id, action), ...])
   frame_indices_raw: List[int] = []
@@ -167,6 +170,10 @@ def compute_labelme_folder_stats(folder: str) -> Dict[str, Any]:
       frame_indices_raw.append(fidx)
     # 使用文件顺序作为后备顺序（若无法解析），用累积长度替代
     frames.append((fidx if fidx is not None else len(frames), pairs))
+    try:
+      pbar.update(1)
+    except Exception:
+      pass
 
   # 按帧序号排序
   frames.sort(key=lambda t: t[0])
@@ -215,6 +222,10 @@ def compute_labelme_folder_stats(folder: str) -> Dict[str, Any]:
       "ignored_shapes_without_id": ignored_shapes_without_id,
     },
   }
+  try:
+    pbar.close()
+  except Exception:
+    pass
   return stats
 
 
@@ -235,6 +246,7 @@ def compute_aggregate_stats(folders: List[str]) -> Dict[str, Any]:
   num_boxes = 0
   num_images_total = 0
 
+  pbar = tqdm(total=len(folders), desc="analyze folders", unit="folder")
   for folder in folders:
     s = compute_labelme_folder_stats(folder)
     for k, v in s.get("bbox_normalized", {}).get("anomalies", {}).items():
@@ -302,6 +314,10 @@ def compute_aggregate_stats(folders: List[str]) -> Dict[str, Any]:
       "ignored_shapes_without_id": ignored_shapes_without_id_total,
     },
   }
+  try:
+    pbar.close()
+  except Exception:
+    pass
   return stats
 
 

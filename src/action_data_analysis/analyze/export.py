@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import os
 import shutil
-from typing import Iterable, List, Tuple
+from typing import Iterable, List, Tuple, Optional, Dict
 import json
 
 from action_data_analysis.analyze.visual import sample_per_class_examples
+from action_data_analysis.io.json import iter_labelme_dir, extract_bbox_and_action
+from tqdm import tqdm
 
 
 def _ensure_dir(path: str) -> None:
@@ -135,6 +137,9 @@ def export_samples_with_context(
   dataset_root = os.path.join(output_root, dataset_name)
   _ensure_dir(dataset_root)
 
+  # 总计条目数量（每个 items 里是一条中心帧样例）
+  total_items = sum(len(v) for v in picked.values())
+  pbar = tqdm(total=total_items, desc="export samples", unit="item")
   for action, items in picked.items():
     act_dir = os.path.join(dataset_root, action or "unknown")
     _ensure_dir(act_dir)
@@ -170,6 +175,11 @@ def export_samples_with_context(
         src_json_path = os.path.join(folder, os.path.splitext(fname)[0] + ".json")
         if os.path.exists(src_json_path):
           shutil.copy2(src_json_path, os.path.join(sample_dir, os.path.basename(src_json_path)))
+      pbar.update(1)
+  try:
+    pbar.close()
+  except Exception:
+    pass
 
 
 def merge_flatten_datasets(
@@ -193,6 +203,8 @@ def merge_flatten_datasets(
       k += 1
     shutil.copy2(src_path, os.path.join(dst_dir, name))
 
+  from tqdm import tqdm as _tqdm  # 局部别名，避免与上方 pbar 名冲突
+  pbar = _tqdm(desc="flatten", unit="file")
   for root in dataset_roots:
     if not os.path.isdir(root):
       continue
@@ -259,4 +271,240 @@ def merge_flatten_datasets(
               _copy_with_unique_name(src_path, output_dir, flat_name)
           else:
             _copy_with_unique_name(src_path, output_dir, flat_name)
+          try:
+            pbar.update(1)
+          except Exception:
+            pass
+  try:
+    pbar.close()
+  except Exception:
+    pass
+
+
+def merge_std_samples_into_single(
+  inputs: List[str],
+  out_root: Optional[str] = None,
+  merged_sample_name: str = "merged_all",
+) -> Dict[str, int]:
+  """将若干 std 样例目录合并为一个样例，输出新的 std 结构。
+
+  规则：
+  - 自动发现 inputs 下的样例目录（std 根 / videos / videos/* 均可）。
+  - 在 out_root 下创建标准结构：out_root/videos/<merged_sample_name>/
+  - 复制每个样例中的图片与 JSON 到上述单一样例目录。
+  - 为避免重名冲突：目标文件名加前缀 "<orig_sample_id>__"。
+  - 对 JSON：重写 imagePath 指向新文件名（同前缀），扩展名优先按配对图片推断，否则按原 imagePath 推断，兜底 .jpg。
+
+  返回统计信息：{"num_samples": N, "num_images": I, "num_jsons": J}
+  """
+  sample_dirs = _discover_std_sample_folders(inputs)
+  if not sample_dirs:
+    return {"num_samples": 0, "num_images": 0, "num_jsons": 0}
+
+  # 推断默认 out_root
+  if not out_root:
+    # 取第一个样例目录的两级上级作为 std 根（.../<std_root>/videos/<sample>）
+    any_sample = sample_dirs[0]
+    videos_dir = os.path.dirname(any_sample)
+    std_root = os.path.dirname(videos_dir)
+    out_root = std_root + "_merged_single"
+
+  # 目标样例目录
+  merged_dir = os.path.join(out_root, "videos", merged_sample_name)
+  _ensure_dir(merged_dir)
+
+  allow_img_exts = (".jpg", ".jpeg", ".png")
+  num_images = 0
+  num_jsons = 0
+
+  # 确保唯一命名的帮助函数
+  def _unique_dest_name(base_name: str) -> str:
+    name = base_name
+    stem, ext = os.path.splitext(base_name)
+    k = 1
+    while os.path.exists(os.path.join(merged_dir, name)):
+      name = f"{stem}_dup{k}{ext}"
+      k += 1
+    return name
+
+  from tqdm import tqdm as _tqdm  # 局部别名
+  pbar = _tqdm(total=len(sample_dirs), desc="merge-into-single", unit="sample")
+  for sample_dir in sample_dirs:
+    orig_sample_id = os.path.basename(os.path.normpath(sample_dir))
+
+    # 列出该样例下的所有文件
+    try:
+      file_names = sorted(os.listdir(sample_dir))
+    except Exception:
+      file_names = []
+
+    # 第一遍复制图片（供 JSON 扩展名推断）
+    for fname in file_names:
+      src_path = os.path.join(sample_dir, fname)
+      if not os.path.isfile(src_path):
+        continue
+      if not os.path.splitext(fname)[1].lower() in allow_img_exts:
+        continue
+      dst_base = f"{orig_sample_id}__{fname}"
+      dst_name = _unique_dest_name(dst_base)
+      shutil.copy2(src_path, os.path.join(merged_dir, dst_name))
+      num_images += 1
+
+    # 第二遍处理 JSON：重写 imagePath 并写入
+    for fname in file_names:
+      if not fname.lower().endswith('.json'):
+        continue
+      src_json_path = os.path.join(sample_dir, fname)
+      try:
+        with open(src_json_path, 'r', encoding='utf-8') as f:
+          rec = json.load(f)
+      except Exception:
+        # 读取失败，按原样重命名复制
+        dst_base = f"{orig_sample_id}__{fname}"
+        dst_name = _unique_dest_name(dst_base)
+        shutil.copy2(src_json_path, os.path.join(merged_dir, dst_name))
+        num_jsons += 1
+        continue
+
+      stem = os.path.splitext(fname)[0]
+      # 推断图片扩展名（优先存在的配对图片，其次 JSON 原 imagePath，兜底 .jpg）
+      img_ext: str = ""
+      for ext in allow_img_exts:
+        if os.path.exists(os.path.join(sample_dir, stem + ext)):
+          img_ext = ext
+          break
+      if not img_ext:
+        old_path = rec.get('imagePath') or ""
+        if isinstance(old_path, str) and old_path:
+          _, old_ext = os.path.splitext(old_path)
+          if old_ext.lower() in allow_img_exts:
+            img_ext = old_ext
+      if not img_ext:
+        img_ext = ".jpg"
+
+      new_image_name = f"{orig_sample_id}__{stem}{img_ext}"
+      rec['imagePath'] = new_image_name
+
+      # 确保 JSON 文件名唯一
+      dst_json_base = f"{orig_sample_id}__{fname}"
+      dst_json_name = _unique_dest_name(dst_json_base)
+      dst_json_path = os.path.join(merged_dir, dst_json_name)
+      try:
+        with open(dst_json_path, 'w', encoding='utf-8') as f:
+          json.dump(rec, f, ensure_ascii=False, indent=2)
+        num_jsons += 1
+      except Exception:
+        # 写失败则原样复制
+        shutil.copy2(src_json_path, dst_json_path)
+        num_jsons += 1
+
+    try:
+      pbar.update(1)
+    except Exception:
+      pass
+
+  try:
+    pbar.close()
+  except Exception:
+    pass
+
+  return {"num_samples": len(sample_dirs), "num_images": num_images, "num_jsons": num_jsons}
+
+
+def _sanitize_for_dir(name: str) -> str:
+  # 将不适合文件夹名的字符替换为下划线，保留常见可读字符
+  import re
+  s = name.strip()
+  s = re.sub(r"\s+", "_", s)
+  s = re.sub(r"[^0-9A-Za-z_\-\.\u4e00-\u9fa5]", "_", s)
+  return s or "unknown"
+
+
+def rename_std_samples_by_action(
+  inputs: List[str],
+  out_root: Optional[str] = None,
+  name_format: str = "{action}__{orig}",
+) -> Dict[str, int]:
+  """按动作信息重命名样例目录（输出到新的 std 根）。
+
+  过程：
+  - 发现样例目录（支持 std 根 / videos / videos/*）。
+  - 读取样例内所有 JSON，收集动作标签；取出现频次最高的动作作为该样例动作；若无则 "unknown"。
+  - 目标目录结构：<out_root>/videos/<name_format(action, orig)>/
+  - 复制（非移动）整个样例目录内容到新目录；若重名则追加 _dup{k}。
+
+  返回统计：{"num_samples": N, "renamed": R}
+  """
+  sample_dirs = _discover_std_sample_folders(inputs)
+  if not sample_dirs:
+    return {"num_samples": 0, "renamed": 0}
+
+  # 推断默认 out_root
+  if not out_root:
+    any_sample = sample_dirs[0]
+    videos_dir = os.path.dirname(any_sample)
+    std_root = os.path.dirname(videos_dir)
+    out_root = std_root + "_renamed_by_action"
+
+  videos_out = os.path.join(out_root, "videos")
+  _ensure_dir(videos_out)
+
+  def _copy_dir(src: str, dst: str) -> None:
+    _ensure_dir(dst)
+    for fname in os.listdir(src):
+      sp = os.path.join(src, fname)
+      dp = os.path.join(dst, fname)
+      if os.path.isdir(sp):
+        _copy_dir(sp, dp)
+      else:
+        shutil.copy2(sp, dp)
+
+  renamed = 0
+  from collections import Counter
+  from tqdm import tqdm as _tqdm
+  pbar = _tqdm(total=len(sample_dirs), desc="rename-by-action", unit="sample")
+  for sample_dir in sample_dirs:
+    orig = os.path.basename(os.path.normpath(sample_dir))
+
+    # 收集动作频次
+    cnt: Counter[str] = Counter()
+    for json_path, rec in iter_labelme_dir(sample_dir):
+      for sh in rec.get("shapes", []) or []:
+        parsed = extract_bbox_and_action(sh)
+        if parsed is None:
+          continue
+        _, act = parsed
+        act_norm = _sanitize_for_dir(str(act or "").strip() or "unknown")
+        cnt[act_norm] += 1
+
+    if cnt:
+      action = max(cnt.items(), key=lambda kv: kv[1])[0]
+    else:
+      action = "unknown"
+
+    base_name = name_format.format(action=action, orig=orig)
+    base_name = _sanitize_for_dir(base_name)
+
+    # 确保唯一
+    dst_name = base_name
+    k = 1
+    while os.path.exists(os.path.join(videos_out, dst_name)):
+      dst_name = f"{base_name}_dup{k}"
+      k += 1
+
+    dst_dir = os.path.join(videos_out, dst_name)
+    _copy_dir(sample_dir, dst_dir)
+    renamed += 1
+
+    try:
+      pbar.update(1)
+    except Exception:
+      pass
+
+  try:
+    pbar.close()
+  except Exception:
+    pass
+
+  return {"num_samples": len(sample_dirs), "renamed": renamed}
 
