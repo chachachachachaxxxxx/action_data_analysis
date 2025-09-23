@@ -136,6 +136,116 @@ def _collect_tubes_from_labelme_folder(folder: str) -> Dict[str, List[int]]:
   return finished_lengths_by_action
 
 
+def _collect_tube_segments_from_labelme_folder(folder: str) -> List[Dict[str, Any]]:
+  """从一个 LabelMe 帧目录中收集每条时空管的片段（含位置信息）。
+
+  返回：List[{
+    action: str,
+    tid: str,             # 轨迹/实例 id（尽力从 attributes/flags/group_id 提取）
+    folder: str,          # 样例目录绝对路径
+    start: int,           # 片段起始帧索引（按文件名数值）
+    end: int,             # 片段结束帧索引
+    length: int,          # 帧数
+  }]
+  """
+  frames: List[Tuple[int, List[Tuple[str, str]]]] = []
+  for json_path, rec in iter_labelme_dir(folder):
+    pairs: List[Tuple[str, str]] = []
+    for sh in rec.get("shapes", []) or []:
+      parsed = extract_bbox_and_action(sh)
+      if parsed is None:
+        continue
+      _bbox, action = parsed
+      if not action:
+        continue
+      # 提取 track/group id
+      attrs = sh.get("attributes") or {}
+      flags = sh.get("flags") or {}
+      tid: Optional[str] = None
+      for key in ("id", "track_id", "player_id"):
+        v = attrs.get(key)
+        if isinstance(v, (str, int)):
+          tid = str(v)
+          break
+      if tid is None:
+        for key in ("id", "track_id", "player_id"):
+          v = flags.get(key)
+          if isinstance(v, (str, int)):
+            tid = str(v)
+            break
+      if tid is None:
+        v = sh.get("group_id")
+        if isinstance(v, (str, int)):
+          tid = str(v)
+      if tid:
+        pairs.append((tid, action))
+    fidx = _parse_frame_index_from_path(json_path)
+    frames.append((fidx if fidx is not None else len(frames), pairs))
+
+  frames.sort(key=lambda t: t[0])
+
+  # 自动估计 stride，若失败则按数据集规则
+  diffs: Counter[int] = Counter()
+  prev_idx: Optional[int] = None
+  for fidx, _ in frames:
+    if prev_idx is not None:
+      d = fidx - prev_idx
+      if d > 0:
+        diffs[d] += 1
+    prev_idx = fidx
+  if diffs:
+    stride = max(diffs.items(), key=lambda kv: (kv[1], -kv[0]))[0]
+  else:
+    stride = _detect_dataset_stride(folder)
+
+  last_idx_by_key: Dict[Tuple[str, str], int] = {}
+  cur_len_by_key: Dict[Tuple[str, str], int] = {}
+  cur_start_by_key: Dict[Tuple[str, str], int] = {}
+  segments: List[Dict[str, Any]] = []
+
+  for fidx, pairs in frames:
+    if not pairs:
+      continue
+    # 同一帧若重复同键，仅计一次
+    unique_pairs = set(pairs)
+    for key in unique_pairs:
+      if key in last_idx_by_key and (fidx - last_idx_by_key[key] == stride):
+        # 连续
+        cur_len_by_key[key] = cur_len_by_key.get(key, 0) + 1
+        last_idx_by_key[key] = fidx
+      else:
+        # 结算旧段
+        if key in cur_len_by_key and cur_len_by_key[key] > 0:
+          tid, act = key
+          segments.append({
+            "action": act,
+            "tid": tid,
+            "folder": os.path.abspath(folder),
+            "start": int(cur_start_by_key[key]),
+            "end": int(last_idx_by_key[key]),
+            "length": int(cur_len_by_key[key]),
+          })
+        # 开新段
+        cur_len_by_key[key] = 1
+        last_idx_by_key[key] = fidx
+        cur_start_by_key[key] = fidx
+
+  # 收尾：结算仍在进行中的段
+  for key, L in cur_len_by_key.items():
+    if L > 0:
+      tid, act = key
+      segments.append({
+        "action": act,
+        "tid": tid,
+        "folder": os.path.abspath(folder),
+        "start": int(cur_start_by_key[key]),
+        "end": int(last_idx_by_key[key]),
+        "length": int(L),
+      })
+
+  return segments
+
+
 def compute_tube_lengths_for_labelme_dirs(folders: List[str]) -> Dict[str, Any]:
   """聚合多个 LabelMe 帧目录的tube长度分布。
 
@@ -145,19 +255,67 @@ def compute_tube_lengths_for_labelme_dirs(folders: List[str]) -> Dict[str, Any]:
   - folders: [...]
   """
   agg_by_action: Dict[str, List[int]] = defaultdict(list)
+  segments_by_action: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
   for folder in folders:
-    per_action_lengths = _collect_tubes_from_labelme_folder(folder)
-    for action, ls in per_action_lengths.items():
-      agg_by_action[action].extend(int(x) for x in ls)
+    # 收集段及长度
+    segs = _collect_tube_segments_from_labelme_folder(folder)
+    for seg in segs:
+      act = seg.get("action") or "__unknown__"
+      L = int(seg.get("length", 0))
+      if L > 0:
+        agg_by_action[act].append(L)
+        # 保存定位信息供异常输出
+        segments_by_action[act].append(seg)
+    # 进度更新在性能优化提交中统一添加
 
   per_action_stats: Dict[str, Any] = {}
   overall_lengths: List[int] = []
+  outliers_by_action: Dict[str, Any] = {}
+
   for action, ls in agg_by_action.items():
     overall_lengths.extend(ls)
+    # 统计基本分位
+    summary = summarize_lengths(ls)
     per_action_stats[action] = {
       "count": int(len(ls)),
-      "summary": summarize_lengths(ls),
+      "summary": summary,
     }
+    # 计算 IQR 异常值
+    if ls:
+      arr = np.asarray(ls, dtype=float)
+      q1 = float(np.percentile(arr, 25))
+      q3 = float(np.percentile(arr, 75))
+      iqr = q3 - q1
+      lower = q1 - 1.5 * iqr
+      upper = q3 + 1.5 * iqr
+      low_list: List[Dict[str, Any]] = []
+      high_list: List[Dict[str, Any]] = []
+      for seg in segments_by_action.get(action, []):
+        L = int(seg.get("length", 0))
+        if L < lower:
+          low_list.append({
+            "folder": seg.get("folder", ""),
+            "tid": seg.get("tid", ""),
+            "start": int(seg.get("start", 0)),
+            "end": int(seg.get("end", 0)),
+            "length": L,
+          })
+        elif L > upper:
+          high_list.append({
+            "folder": seg.get("folder", ""),
+            "tid": seg.get("tid", ""),
+            "start": int(seg.get("start", 0)),
+            "end": int(seg.get("end", 0)),
+            "length": L,
+          })
+      # 限制每类最多输出一定数量，避免 JSON 过大
+      low_list.sort(key=lambda s: s["length"])  # 短的在前
+      high_list.sort(key=lambda s: -s["length"])  # 长的在前
+      outliers_by_action[action] = {
+        "thresholds": {"q1": q1, "q3": q3, "iqr": iqr, "lower": lower, "upper": upper},
+        "low": low_list[:50],
+        "high": high_list[:50],
+      }
 
   result: Dict[str, Any] = {
     "folders": [os.path.abspath(f) for f in folders],
@@ -167,6 +325,8 @@ def compute_tube_lengths_for_labelme_dirs(folders: List[str]) -> Dict[str, Any]:
       "summary": summarize_lengths(overall_lengths),
     },
   }
+  if outliers_by_action:
+    result["outliers"] = dict(sorted(outliers_by_action.items(), key=lambda kv: kv[0]))
   return result
 
 
@@ -313,6 +473,7 @@ def collect_overall_tube_lengths_labelme_dirs(folders: List[str]) -> List[int]:
     per_action = _collect_tubes_from_labelme_folder(folder)
     for _act, ls in per_action.items():
       overall.extend(int(x) for x in ls)
+  # 进度更新在性能优化提交中统一添加
   return overall
 
 
