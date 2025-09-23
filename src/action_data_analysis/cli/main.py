@@ -3,12 +3,14 @@ from __future__ import annotations
 import argparse
 import sys
 from typing import List
+from dataclasses import asdict
 
 from action_data_analysis.analyze.export import (
   export_samples_with_context,
   merge_flatten_datasets,
   _discover_leaf_folders,
   _discover_std_sample_folders,
+  merge_std_samples_into_single,
 )
 from action_data_analysis.analyze.visual import visualize_samples_with_context
 from action_data_analysis.analyze.stats import (
@@ -33,6 +35,8 @@ from action_data_analysis.analyze.overlap import (
   render_overlaps_markdown,
 )
 from action_data_analysis.convert.std_converter import convert_std_dataset
+from action_data_analysis.convert.std_subset import create_std_subset
+from action_data_analysis.convert.split_gt_csv import split_gt_csv
 
 
 def _add_export_samples_parser(subparsers) -> None:
@@ -105,6 +109,13 @@ def _add_convert_std_parser(subparsers) -> None:
   p.add_argument("--no-copy-images", action="store_true", help="不复制图片，仅转换 JSON")
 
 
+def _add_subset_std_parser(subparsers) -> None:
+  p = subparsers.add_parser("subset-std", help="从 std 数据集抽取代表性子集（每类至少 N 个样例）")
+  p.add_argument("dirs", nargs="+", help="std 根目录、videos 目录、或 videos/* 样例目录")
+  p.add_argument("--out", dest="out_dir", default="", help="输出根目录（默认：<std_root>_subset）")
+  p.add_argument("--per-class", type=int, default=3, help="每类至少样例数，默认 3")
+
+
 def main() -> None:
   parser = argparse.ArgumentParser(
     prog="action-data-analysis",
@@ -114,6 +125,12 @@ def main() -> None:
 
   _add_export_samples_parser(subparsers)
   _add_merge_flatten_parser(subparsers)
+  def _add_merge_into_single_parser(subparsers) -> None:
+    p = subparsers.add_parser("merge-into-single", help="将多个 std 样例合并为单一样例")
+    p.add_argument("dirs", nargs="+", help="std 根目录、videos 目录、或 videos/* 样例目录")
+    p.add_argument("--out", dest="out_root", default="", help="输出 std 根目录（默认：<std_root>_merged_single）")
+    p.add_argument("--name", dest="sample_name", default="merged_all", help="合并后的样例名（默认 merged_all）")
+  _add_merge_into_single_parser(subparsers)
   _add_visualize_samples_parser(subparsers)
   _add_analyze_folder_parser(subparsers)
   _add_analyze_dirs_parser(subparsers)
@@ -122,6 +139,57 @@ def main() -> None:
   _add_plot_tube_lengths_parser(subparsers)
   _add_time_bins_parser(subparsers)
   _add_convert_std_parser(subparsers)
+  # 新增：导出 tube 视频（std）
+  def _add_export_tubes_parser(subparsers) -> None:
+    p = subparsers.add_parser("export-tubes", help="从 std 目录导出每条 tube 的视频 (25fps, 224x224)")
+    p.add_argument("dirs", nargs="+", help="std 根目录、videos 目录或 videos/* 样例目录")
+    p.add_argument("--out", required=True, dest="out_dir", help="输出根目录")
+    p.add_argument("--strategy", choices=["letterbox", "square"], default="letterbox", help="导出策略")
+    p.add_argument("--fps", type=int, default=25, help="输出帧率 (默认25)")
+    p.add_argument("--size", type=int, default=224, help="输出分辨率，边长，默认224")
+    p.add_argument("--min-len", type=int, default=1, help="最小 tube 帧数过滤")
+    p.add_argument("--labels", dest="labels_json", default="", help="labels_dict.json 的路径（可选）。若不提供，将尝试使用 <out>/annotations/labels_dict.json")
+  _add_export_tubes_parser(subparsers)
+  _add_subset_std_parser(subparsers)
+  # 新增：按 tube 拆分样例，生成新的 std 数据集
+  def _add_split_by_tube_parser(subparsers) -> None:
+    p = subparsers.add_parser("split-by-tube", help="将 std 样例按时空管拆分为新的 std 数据集")
+    p.add_argument("dirs", nargs="+", help="std 根目录、videos 目录或 videos/* 样例目录")
+    p.add_argument("--out", dest="out_dir", default="", help="输出根目录（默认：<std_root>_by_tube）")
+    p.add_argument("--min-len", type=int, default=1, help="最小 tube 帧数过滤")
+  _add_split_by_tube_parser(subparsers)
+  # 新增：按 fps 窗口切分 tube，生成新的 std 数据集，并记录缺失标注掩码
+  def _add_split_by_tube_fpswin_parser(subparsers) -> None:
+    p = subparsers.add_parser("split-by-tube-fpswin", help="按 fps 窗口切分 tube（win=fps, stride=fps//2），缺失帧用最近标注补全并写 annotations/mask.csv")
+    p.add_argument("dirs", nargs="+", help="std 根目录、videos 目录或 videos/* 样例目录")
+    p.add_argument("--out", dest="out_dir", default="", help="输出根目录（默认：<std_root>_by_tube_fpswin）")
+    p.add_argument("--fps", type=int, required=True, help="窗口长度（帧）= fps，步长= fps//2")
+    p.add_argument("--min-len", type=int, default=1, help="最小 tube 帧数过滤")
+  _add_split_by_tube_fpswin_parser(subparsers)
+  # 新增：按比例切分 gt.csv
+  def _add_split_gt_csv_parser(subparsers) -> None:
+    p = subparsers.add_parser("split-gt-csv", help="按比例切分 gt.csv，去表头并删除 frames 列，视频路径加前缀")
+    p.add_argument("gt_csv", help="输入 gt.csv 路径")
+    p.add_argument("--out", dest="out_dir", default="", help="输出目录（默认与 gt.csv 同目录）")
+    p.add_argument("--ratios", nargs=3, type=float, default=[8,1,1], help="切分比例 train val test，如 8 1 1")
+    p.add_argument("--seed", type=int, default=42, help="随机种子")
+    p.add_argument("--video-col", dest="video_col", default="", help="视频列名（留空自动识别）")
+    p.add_argument("--prefix", dest="prefix", default="videos/", help="为视频路径添加的前缀（默认 videos/）")
+  _add_split_gt_csv_parser(subparsers)
+  # 新增：std <-> pkl 转换
+  def _add_std_pkl_parsers(subparsers) -> None:
+    p1 = subparsers.add_parser("std-to-pkl", help="从 std 数据集生成标准 PKL（annotations/gt.pkl）")
+    p1.add_argument("std_root", help="std 根目录（包含 videos 与可选 stats）")
+    p1.add_argument("--out", dest="out_root", default="", help="输出根目录（默认：std_root）")
+    p1.add_argument("--name", dest="name", default="gt.pkl", help="输出 PKL 文件名（默认 gt.pkl）")
+
+    p2 = subparsers.add_parser("pkl-to-std", help="从标准 PKL 重建 std（LabelMe JSON）")
+    p2.add_argument("pkl_path", help="标准 PKL 路径（包含 version/labels/videos/nframes/resolution/gttubes）")
+    p2.add_argument("videos_root", help="包含 <video_id>/ 帧图像的根目录（只读）")
+    p2.add_argument("--out", dest="out_root", default="", help="输出 std 根目录（默认：与 PKL 同级 _std）")
+    p2.add_argument("--inplace", action="store_true", help="就地在 videos_root/<video_id> 写 JSON，不复制图片")
+    p2.add_argument("--copy-images", action="store_true", help="当非 inplace 时复制图片到输出目录")
+  _add_std_pkl_parsers(subparsers)
 
   args = parser.parse_args()
 
@@ -138,6 +206,16 @@ def main() -> None:
 
   if args.command == "merge-flatten":
     merge_flatten_datasets(args.roots, args.out_dir)
+    return
+
+  if args.command == "merge-into-single":
+    summary = merge_std_samples_into_single(
+      inputs=list(args.dirs),
+      out_root=(args.out_root if args.out_root else None),
+      merged_sample_name=str(args.sample_name or "merged_all"),
+    )
+    import json as _json
+    print(_json.dumps(summary, ensure_ascii=False, indent=2))
     return
 
   if args.command == "visualize-samples":
@@ -229,7 +307,6 @@ def main() -> None:
     return
 
   if args.command == "convert-std":
-    from dataclasses import asdict
     summary = convert_std_dataset(
       std_root=args.std_root,
       mapping_csv=args.mapping_csv,
@@ -241,6 +318,99 @@ def main() -> None:
     with open(os.path.join(summary.output_root, 'conversion_summary.json'), 'w', encoding='utf-8') as f:
       json.dump(asdict(summary), f, ensure_ascii=False, indent=2)
     print(f"[OK] converted std dataset: {summary.output_root}")
+    return
+
+  if args.command == "export-tubes":
+    from action_data_analysis.analyze.export_tube_videos import export_std_tube_videos
+    stats = export_std_tube_videos(
+      inputs=list(args.dirs),
+      output_root=args.out_dir,
+      strategy=str(args.strategy),
+      fps=int(args.fps),
+      size=int(args.size),
+      min_len=int(args.min_len),
+      labels_json=str(args.labels_json or ""),
+    )
+    import json as _json
+    print(_json.dumps(stats, ensure_ascii=False, indent=2))
+    return
+
+  if args.command == "subset-std":
+    summary = create_std_subset(inputs=list(args.dirs), out_root=(args.out_dir if args.out_dir else None), per_class=int(args.per_class))
+    import os, json
+    os.makedirs(summary.output_root, exist_ok=True)
+    with open(os.path.join(summary.output_root, 'subset_summary.json'), 'w', encoding='utf-8') as f:
+      json.dump(asdict(summary), f, ensure_ascii=False, indent=2)
+    print(f"[OK] subset created: {summary.output_root}")
+    return
+
+  if args.command == "split-by-tube":
+    from action_data_analysis.convert.split_tubes import split_std_samples_by_tube
+    summary = split_std_samples_by_tube(
+      inputs=list(args.dirs),
+      out_root=(args.out_dir if args.out_dir else None),
+      min_len=int(args.min_len),
+    )
+    import os, json
+    os.makedirs(summary.output_root, exist_ok=True)
+    with open(os.path.join(summary.output_root, 'split_summary.json'), 'w', encoding='utf-8') as f:
+      json.dump(asdict(summary), f, ensure_ascii=False, indent=2)
+    print(f"[OK] split-by-tube dataset created: {summary.output_root}")
+    return
+
+  if args.command == "split-by-tube-fpswin":
+    from action_data_analysis.convert.split_tubes import split_std_samples_by_tube_fpswin
+    summary = split_std_samples_by_tube_fpswin(
+      inputs=list(args.dirs),
+      out_root=(args.out_dir if args.out_dir else None),
+      fps=int(args.fps),
+      min_len=int(args.min_len),
+    )
+    import os, json
+    os.makedirs(summary.output_root, exist_ok=True)
+    with open(os.path.join(summary.output_root, 'split_fpswin_summary.json'), 'w', encoding='utf-8') as f:
+      json.dump(asdict(summary), f, ensure_ascii=False, indent=2)
+    print(f"[OK] split-by-tube-fpswin dataset created: {summary.output_root}")
+    return
+
+  if args.command == "split-gt-csv":
+    ratios = list(args.ratios)
+    summary = split_gt_csv(
+      gt_csv_path=args.gt_csv,
+      out_dir=(args.out_dir if args.out_dir else None),
+      train_ratio=float(ratios[0]),
+      val_ratio=float(ratios[1]),
+      test_ratio=float(ratios[2]),
+      seed=int(args.seed),
+      video_col=(args.video_col if args.video_col else None),
+      add_prefix=str(args.prefix),
+    )
+    import json as _json
+    print(_json.dumps(summary.__dict__, ensure_ascii=False, indent=2))
+    return
+
+  if args.command == "std-to-pkl":
+    from action_data_analysis.convert.std_pkl import std_to_pkl
+    out_pkl = std_to_pkl(
+      std_root=args.std_root,
+      out_root=(args.out_root if args.out_root else None),
+      out_name=str(args.name or "gt.pkl"),
+    )
+    import json as _json
+    print(_json.dumps({"out_pkl": out_pkl}, ensure_ascii=False))
+    return
+
+  if args.command == "pkl-to-std":
+    from action_data_analysis.convert.std_pkl import pkl_to_std
+    out_std = pkl_to_std(
+      pkl_path=args.pkl_path,
+      videos_root=args.videos_root,
+      out_root=(args.out_root if args.out_root else None),
+      inplace=bool(args.inplace),
+      copy_images=bool(args.copy_images),
+    )
+    import json as _json
+    print(_json.dumps({"out_std_root": out_std}, ensure_ascii=False))
     return
 
   # 未知命令（理论不会到这，因为 required=True）
