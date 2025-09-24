@@ -96,6 +96,11 @@ zsh scripts/stats.sh \
 /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std \
 --spf 0.04 \
 --out /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std/stats
+
+zsh scripts/stats.sh \
+/storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted \
+--spf 0.04 \
+--out /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted/stats
 ```
 - 统计多个目录并输出聚合结果：
 ```bash
