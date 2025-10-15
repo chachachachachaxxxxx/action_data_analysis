@@ -87,22 +87,23 @@ def _load_image_for_json(folder: str, json_path: str, rec: Dict[str, Any]) -> Op
 
 
 class TubeExporterBase:
-  def __init__(self, output_size: int = 224, fps: int = 25) -> None:
-    self.output_size = int(output_size)
+  def __init__(self, output_wh: Tuple[int, int] = (224, 224), fps: int = 25) -> None:
+    self.out_w = int(max(1, output_wh[0]))
+    self.out_h = int(max(1, output_wh[1]))
     self.fps = int(fps)
 
   def _letterbox_resize(self, crop: np.ndarray) -> np.ndarray:
     H, W = crop.shape[:2]
     if H <= 0 or W <= 0:
-      return np.zeros((self.output_size, self.output_size, 3), dtype=np.uint8)
-    scale = min(self.output_size / float(W), self.output_size / float(H))
+      return np.zeros((self.out_h, self.out_w, 3), dtype=np.uint8)
+    scale = min(self.out_w / float(W), self.out_h / float(H))
     new_w = max(1, int(round(W * scale)))
     new_h = max(1, int(round(H * scale)))
     interp = cv2.INTER_AREA if scale < 1.0 else cv2.INTER_LINEAR
     resized = cv2.resize(crop, (new_w, new_h), interpolation=interp)
-    canvas = np.zeros((self.output_size, self.output_size, 3), dtype=crop.dtype)
-    x_off = (self.output_size - new_w) // 2
-    y_off = (self.output_size - new_h) // 2
+    canvas = np.zeros((self.out_h, self.out_w, 3), dtype=crop.dtype)
+    x_off = (self.out_w - new_w) // 2
+    y_off = (self.out_h - new_h) // 2
     canvas[y_off:y_off + new_h, x_off:x_off + new_w] = resized
     return canvas
 
@@ -115,18 +116,33 @@ class TubeExporterBase:
       out_path,
       cv2.VideoWriter_fourcc(*'mp4v'),
       float(self.fps),
-      (self.output_size, self.output_size),
+      (self.out_w, self.out_h),
     )
     for img_path, _fidx, box in frames:
       img = cv2.imread(img_path, cv2.IMREAD_COLOR)
       if img is None:
         # 读取失败 -> 写入黑帧占位
-        writer.write(np.zeros((self.output_size, self.output_size, 3), dtype=np.uint8))
+        writer.write(np.zeros((self.out_h, self.out_w, 3), dtype=np.uint8))
         continue
       frame_out = self.process(img, box)
       writer.write(frame_out)
     writer.release()
 
+
+"""
+统一到 128×176 的方式（同一 tube 内大小各异的检测框）
+基本思路（默认 letterbox 策略，推荐）：
+先在整段 tube 内找出“面积最大的框”作为参考框，取其宽高得到固定参考尺寸 (ref_w, ref_h)。
+对每一帧，以“当前帧检测框的中心”为中心，裁出一个固定大小的窗口（宽 ref_w、高 ref_h）。靠边越界会被截断在图像范围内。
+将该裁剪结果按比例缩放并 letterbox 到目标分辨率 128×176（保持原始长宽比，不够的边用黑边填充）。
+结果：每帧输出都是 128×176，目标尺度在整段内基本一致、无形变。
+另一个可选（square 策略）：
+用 tube 内“最大框的最大边”作为参考边长，在每帧以当前框中心裁出固定正方形窗口，然后直接缩放到 128×176。
+结果也统一到 128×176，但会发生非等比拉伸（可能形变）；优点是画面可铺满，无黑边。
+该设计的目的：
+“固定参考窗口 + 居中裁剪”把同一 tube 内不同大小的框统一到近似一致的视觉尺度；
+letterbox 再负责把任意裁剪结果稳定地映射到指定输出分辨率 128×176。
+"""
 
 class LetterboxExporter(TubeExporterBase):
   def process(self, img: np.ndarray, box: Tuple[float, float, float, float]) -> np.ndarray:
@@ -135,7 +151,7 @@ class LetterboxExporter(TubeExporterBase):
     x1 = max(0, min(W, x1)); x2 = max(0, min(W, x2))
     y1 = max(0, min(H, y1)); y2 = max(0, min(H, y2))
     if x2 <= x1 or y2 <= y1:
-      return np.zeros((self.output_size, self.output_size, 3), dtype=img.dtype)
+      return np.zeros((self.out_h, self.out_w, 3), dtype=img.dtype)
     crop = img[y1:y2, x1:x2]
     return self._letterbox_resize(crop)
 
@@ -156,16 +172,16 @@ class SquareCropExporter(TubeExporterBase):
     sx1 = max(0, nx1); sy1 = max(0, ny1)
     sx2 = min(W, nx2); sy2 = min(H, ny2)
     if sx2 <= sx1 or sy2 <= sy1:
-      return np.zeros((self.output_size, self.output_size, 3), dtype=img.dtype)
+      return np.zeros((self.out_h, self.out_w, 3), dtype=img.dtype)
     crop = img[sy1:sy2, sx1:sx2]
-    return cv2.resize(crop, (self.output_size, self.output_size), interpolation=cv2.INTER_LINEAR)
+    return cv2.resize(crop, (self.out_w, self.out_h), interpolation=cv2.INTER_LINEAR)
 
 
 class RefLetterboxExporter(TubeExporterBase):
   """基于参考尺寸（整条 tube 最大框的宽高）进行裁剪，中心按当前帧 box 中心，之后 letterbox 到固定大小。"""
 
-  def __init__(self, ref_wh: Tuple[float, float], output_size: int = 224, fps: int = 25) -> None:
-    super().__init__(output_size=output_size, fps=fps)
+  def __init__(self, ref_wh: Tuple[float, float], output_wh: Tuple[int, int] = (224, 224), fps: int = 25) -> None:
+    super().__init__(output_wh=output_wh, fps=fps)
     self.ref_w = max(1.0, float(ref_wh[0]))
     self.ref_h = max(1.0, float(ref_wh[1]))
 
@@ -181,7 +197,7 @@ class RefLetterboxExporter(TubeExporterBase):
     sx1 = max(0, min(W, rx1)); sy1 = max(0, min(H, ry1))
     sx2 = max(0, min(W, rx2)); sy2 = max(0, min(H, ry2))
     if sx2 <= sx1 or sy2 <= sy1:
-      return np.zeros((self.output_size, self.output_size, 3), dtype=img.dtype)
+      return np.zeros((self.out_h, self.out_w, 3), dtype=img.dtype)
     crop = img[sy1:sy2, sx1:sx2]
     return self._letterbox_resize(crop)
 
@@ -189,8 +205,8 @@ class RefLetterboxExporter(TubeExporterBase):
 class RefSquareCropExporter(TubeExporterBase):
   """基于参考尺寸（整条 tube 最大框的最大边）生成正方形裁剪，中心按当前帧 box 中心，之后缩放到固定大小。"""
 
-  def __init__(self, ref_side: float, output_size: int = 224, fps: int = 25) -> None:
-    super().__init__(output_size=output_size, fps=fps)
+  def __init__(self, ref_side: float, output_wh: Tuple[int, int] = (224, 224), fps: int = 25) -> None:
+    super().__init__(output_wh=output_wh, fps=fps)
     self.side = max(1.0, float(ref_side))
 
   def process(self, img: np.ndarray, box: Tuple[float, float, float, float]) -> np.ndarray:
@@ -205,9 +221,9 @@ class RefSquareCropExporter(TubeExporterBase):
     rx1 = max(0, min(W, sx1)); ry1 = max(0, min(H, sy1))
     rx2 = max(0, min(W, sx2)); ry2 = max(0, min(H, sy2))
     if rx2 <= rx1 or ry2 <= ry1:
-      return np.zeros((self.output_size, self.output_size, 3), dtype=img.dtype)
+      return np.zeros((self.out_h, self.out_w, 3), dtype=img.dtype)
     crop = img[ry1:ry2, rx1:rx2]
-    return cv2.resize(crop, (self.output_size, self.output_size), interpolation=cv2.INTER_LINEAR)
+    return cv2.resize(crop, (self.out_w, self.out_h), interpolation=cv2.INTER_LINEAR)
 
 
 def _build_tubes_from_folder(folder: str) -> Dict[Tuple[str, str], List[Tuple[int, str, Tuple[float, float, float, float]]]]:
@@ -292,7 +308,7 @@ def export_std_tube_videos(
   output_root: str,
   strategy: str = "letterbox",
   fps: int = 25,
-  size: int = 224,
+  size: Any = 224,
   min_len: int = 1,
   labels_json: str = "",
 ) -> Dict[str, Any]:
@@ -301,7 +317,7 @@ def export_std_tube_videos(
   - inputs: std 根目录、videos 目录或具体样例目录；函数会自动发现样例目录
   - strategy: "letterbox" 或 "square"
   - fps: 输出帧率（默认 25）
-  - size: 输出分辨率（size x size，默认 224）
+  - size: 输出分辨率；可为 int（size x size）或 (width,height) 或 "WxH" 字符串
   - min_len: tube 最小帧数过滤
   输出：
   - 写入 <output_root>/videos/*.mp4
@@ -359,6 +375,29 @@ def export_std_tube_videos(
     except Exception:
       pass
 
+  # 解析输出尺寸
+  out_w, out_h = 224, 224
+  try:
+    if isinstance(size, (list, tuple)) and len(size) == 2:
+      out_w, out_h = int(size[0]), int(size[1])
+    elif isinstance(size, str):
+      s = size.lower().replace(" ", "")
+      if "x" in s:
+        parts = s.split("x")
+      elif "," in s:
+        parts = s.split(",")
+      else:
+        v = int(s)
+        out_w, out_h = v, v
+        parts = []
+      if parts:
+        out_w, out_h = int(parts[0]), int(parts[1])
+    else:
+      v = int(size)
+      out_w, out_h = v, v
+  except Exception:
+    out_w, out_h = 224, 224
+
   if strategy.lower() == "square":
     exporter_factory = "ref-square"
   else:
@@ -400,9 +439,9 @@ def export_std_tube_videos(
         rside = max(rw, rh)
         # 基于参考尺寸创建导出器
         if exporter_factory == "ref-square":
-          exporter: TubeExporterBase = RefSquareCropExporter(ref_side=rside, output_size=size, fps=fps)
+          exporter: TubeExporterBase = RefSquareCropExporter(ref_side=rside, output_wh=(out_w, out_h), fps=fps)
         else:
-          exporter = RefLetterboxExporter(ref_wh=(rw, rh), output_size=size, fps=fps)
+          exporter = RefLetterboxExporter(ref_wh=(rw, rh), output_wh=(out_w, out_h), fps=fps)
         # 文件名：不再分动作子目录，统一放到 videos 下
         out_name = f"{sample_id}__tid{tid}__seg{seg_idx:02d}.mp4"
         out_path = os.path.join(videos_dir, out_name)
@@ -450,7 +489,9 @@ def export_std_tube_videos(
     "gt_csv": os.path.abspath(gt_csv),
     "strategy": strategy,
     "fps": int(fps),
-    "size": int(size),
+    "size": (int(size) if isinstance(size, int) else -1),
+    "width": int(out_w),
+    "height": int(out_h),
     "labels_mapped": int(sum(1 for _n, lab, _l in csv_rows if isinstance(lab, str) and lab.isdigit())),
     "labels_unmapped": int(sum(1 for _n, lab, _l in csv_rows if not (isinstance(lab, str) and lab.isdigit()))),
   }

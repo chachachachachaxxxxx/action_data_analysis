@@ -105,3 +105,5 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+
+action_data_analysis.code-workspace

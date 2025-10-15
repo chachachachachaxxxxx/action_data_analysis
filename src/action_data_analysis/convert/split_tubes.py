@@ -8,7 +8,7 @@ from dataclasses import dataclass
 import json as _json
 import bisect
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Set
 
 from action_data_analysis.analyze.export import _discover_std_sample_folders
 from action_data_analysis.io.json import read_labelme_json, iter_labelme_dir
@@ -286,6 +286,10 @@ def split_std_samples_by_tube_fpswin(
   out_root: str | Path | None,
   fps: int,
   min_len: int = 1,
+  stride: Optional[int] = None,
+  splits_dir: Optional[str] = None,
+  single_out: bool = False,
+  pad_edges_images: bool = False,
 ) -> SplitSummary:
   """按 fps 窗口与步长（win=fps, stride=fps//2）切分 tube，生成新的 std 数据集。
 
@@ -300,7 +304,7 @@ def split_std_samples_by_tube_fpswin(
   if int(fps) <= 0:
     raise ValueError("fps must be positive")
   win = int(fps)
-  stride = max(1, int(fps // 2))
+  stride_val = int(stride) if (stride is not None and int(stride) > 0) else max(1, int(fps // 2))
 
   folders = _discover_std_sample_folders(inputs)
   if not folders:
@@ -322,8 +326,50 @@ def split_std_samples_by_tube_fpswin(
   samples_in = 0
   tubes_found = 0
   samples_out = 0
-  # 稀疏掩码：仅记录缺失帧 missing=1
-  mask_rows: List[Tuple[str, int, int]] = []  # (window_name, frame_index, source_frame)
+  # 稀疏掩码：记录缺失帧（nearest 填充）与边缘补全帧（edge pad）
+  # 单数据集输出时附带 split 字段，否则不含
+  mask_rows: List[Tuple[str, str, str, str, Optional[str]]] = []  # (window_name, anno_mask_csv, img_mask_csv, edge_pad_csv, split|None)
+
+  # 若提供 splits_dir，则读取 train/val/test.csv 中的样例列表（第一列路径，形如 videos/<sample>）
+  sample_splits: Optional[Dict[str, Set[str]]] = None
+  if splits_dir:
+    def _read_split_list(csv_path: str) -> Set[str]:
+      names: Set[str] = set()
+      try:
+        import csv
+        with open(csv_path, "r", encoding="utf-8") as f:
+          reader = csv.reader(f)
+          for row in reader:
+            if not row:
+              continue
+            cell = row[0]
+            # 跳过表头（兼容 "tube" 或 "path" 等）
+            if isinstance(cell, str) and cell.strip().lower() in {"tube", "path"}:
+              continue
+            # 兼容未正确分列的情况
+            if (len(row) == 1) and ("," in cell):
+              cell = cell.split(",", 1)[0]
+            # 期望开头为 videos/
+            p = str(cell).strip()
+            if p.startswith("videos/"):
+              sample = p.split("/", 1)[1]
+            else:
+              sample = os.path.basename(p)
+            if sample:
+              names.add(sample)
+      except Exception:
+        names = set()
+      return names
+
+    sd = os.path.abspath(splits_dir)
+    train_set = _read_split_list(os.path.join(sd, "train.csv"))
+    val_set = _read_split_list(os.path.join(sd, "val.csv"))
+    test_set = _read_split_list(os.path.join(sd, "test.csv"))
+    sample_splits = {"train": train_set, "val": val_set, "test": test_set}
+    # 单数据集输出时将为每个 split 生成索引
+    split_index_rows: Dict[str, List[Tuple[str, str]]] = {"train": [], "val": [], "test": []}
+  else:
+    split_index_rows = {}
 
   total_samples = len(folders)
   samples_bar = tqdm(total=total_samples, desc="samples 0/%d" % total_samples, unit="sample")
@@ -344,6 +390,17 @@ def split_std_samples_by_tube_fpswin(
 
     tubes = _build_tubes_from_folder(sample_dir)
     sample_name = os.path.basename(sample_dir.rstrip(os.sep))
+    # 若指定了样例拆分，则仅处理属于任一 split 的样例
+    assigned_splits: List[str] = []
+    if sample_splits is not None:
+      for sp in ("train", "val", "test"):
+        if sample_name in (sample_splits.get(sp) or set()):
+          assigned_splits.append(sp)
+      if not assigned_splits:
+        # 不在任何拆分中，跳过
+        continue
+    else:
+      assigned_splits = []
 
     for (tid, action), seq in sorted(tubes.items(), key=lambda kv: (kv[0][1], kv[0][0])):
       segments = _split_by_separators(seq)
@@ -367,16 +424,20 @@ def split_std_samples_by_tube_fpswin(
           last_start = seg_max - win + 1
           while s <= last_start:
             starts.append(s)
-            s += stride
+            s += stride_val
           if starts and starts[-1] != last_start:
             starts.append(last_start)
         else:
           # 居中扩展：尽量让窗口中心靠近 tube 中心
           center = int(round(sum(anno_fidxs_sorted) / float(len(anno_fidxs_sorted))))
           s0 = center - (win // 2)
-          # 将起点限制在可用帧范围内
-          s0 = max(min_all, min(s0, max_all - win + 1))
-          starts.append(s0)
+          if pad_edges_images:
+            # 不再滑动到可用范围内，允许越界，由边缘补全
+            starts.append(s0)
+          else:
+            # 将起点限制在可用帧范围内（传统做法）
+            s0 = max(min_all, min(s0, max_all - win + 1))
+            starts.append(s0)
 
         # 逐窗口写出
         for w_idx, start in enumerate(starts):
@@ -386,23 +447,53 @@ def split_std_samples_by_tube_fpswin(
           # 每个窗口的稀疏掩码（1-based 索引，范围 1..win）
           anno_mask_indices: List[int] = []
           img_mask_indices: List[int] = []
+          edge_pad_indices: List[int] = []
+          # 该段内可用图片帧索引（用于在段内寻找最近图片）
+          seg_img_indices = [i for i in all_indices_sorted if i >= seg_min and i <= seg_max]
           for offset in range(win):
             fi = start + offset
-            # 选择用于图像/JSON 的源帧（若不存在则用最近存在的图片帧）
+            # 选择用于图像/JSON 的源帧
             if fi in all_frames:
               img_path, json_path = all_frames[fi]
               img_src_idx = fi
             else:
-              img_src_idx = _nearest_source_frame(fi, all_indices_sorted)
-              img_path, json_path = all_frames[img_src_idx]
-              img_mask_indices.append(offset + 1)
+              if pad_edges_images and (fi < seg_min or fi > seg_max):
+                # 边界外：用段首/段尾
+                edge_src = seg_min if fi < seg_min else seg_max
+                # 若 edge_src 帧无图片，则就近取图片（全局）
+                img_src_idx = edge_src if edge_src in all_frames else _nearest_source_frame(edge_src, all_indices_sorted)
+                img_path, json_path = all_frames[img_src_idx]
+                edge_pad_indices.append(offset + 1)
+              else:
+                # 段内或未启用边缘补全：取最近图片（优先段内）
+                if seg_img_indices:
+                  # 在 seg_img_indices 中找最近
+                  pos = bisect.bisect_left(seg_img_indices, fi)
+                  if pos <= 0:
+                    img_src_idx = seg_img_indices[0]
+                  elif pos >= len(seg_img_indices):
+                    img_src_idx = seg_img_indices[-1]
+                  else:
+                    left_val = seg_img_indices[pos - 1]
+                    right_val = seg_img_indices[pos]
+                    img_src_idx = left_val if (fi - left_val) <= (right_val - fi) else right_val
+                else:
+                  img_src_idx = _nearest_source_frame(fi, all_indices_sorted)
+                img_path, json_path = all_frames[img_src_idx]
+                img_mask_indices.append(offset + 1)
             # 标准化目标文件名（从 000001 开始）
             dest_stem = f"{offset + 1:06d}"
             src_ext = os.path.splitext(os.path.basename(img_path))[1]
             dest_img_name = f"{dest_stem}{src_ext}"
             dest_json_name = f"{dest_stem}.json"
             # 选择用于 bbox 的源帧（最近注释帧）
-            src_f = fi if fi in bbox_by_fidx else _nearest_source_frame(fi, anno_fidxs_sorted)
+            if fi in bbox_by_fidx:
+              src_f = fi
+            else:
+              if pad_edges_images and (fi < seg_min or fi > seg_max):
+                src_f = seg_min if fi < seg_min else seg_max
+              else:
+                src_f = _nearest_source_frame(fi, anno_fidxs_sorted)
             missing = 0 if fi in bbox_by_fidx else 1
             src_bbox = bbox_by_fidx.get(src_f)
             if missing == 1:
@@ -454,10 +545,23 @@ def split_std_samples_by_tube_fpswin(
               if not dst_img.exists():
                 shutil.copy2(img_path, dst_img)
           # 记录稀疏 mask（按窗口聚合，一行）
-          if anno_mask_indices or img_mask_indices:
+          if anno_mask_indices or img_mask_indices or edge_pad_indices:
             anno_str = ",".join(str(i) for i in sorted(set(anno_mask_indices))) if anno_mask_indices else ""
             img_str = ",".join(str(i) for i in sorted(set(img_mask_indices))) if img_mask_indices else ""
-            mask_rows.append((new_sample, anno_str, img_str))
+            edge_str = ",".join(str(i) for i in sorted(set(edge_pad_indices))) if edge_pad_indices else ""
+            # 若有拆分信息，则记录所属 split；若多个 split（理论不应发生），逐个记录
+            if assigned_splits:
+              for sp in assigned_splits:
+                mask_rows.append((new_sample, anno_str, img_str, edge_str, sp if single_out else None))
+            else:
+              mask_rows.append((new_sample, anno_str, img_str, edge_str, None))
+
+          # 若启用单数据集输出并提供了拆分，则为对应拆分写索引（path,label）
+          if single_out and sample_splits is not None:
+            window_rel = f"videos/{new_sample}"
+            label_str = str(action)
+            for sp in assigned_splits:
+              split_index_rows[sp].append((window_rel, label_str))
           samples_out += 1
           try:
             windows_bar.update(1)
@@ -475,11 +579,33 @@ def split_std_samples_by_tube_fpswin(
     with open(mask_csv, "w", newline="", encoding="utf-8") as f:
       # 使用 QUOTE_NONNUMERIC：确保字符串字段（包括单个索引如 "5"）带双引号
       w = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC)
-      w.writerow(["window", "anno_mask", "img_mask"])  # 1-based 索引，逗号分隔；为空表示该类型无缺失
-      for window_name, anno_str, img_str in mask_rows:
-        w.writerow([window_name, anno_str, img_str])
+      if single_out and splits_dir:
+        w.writerow(["window", "anno_mask", "img_mask", "edge_pad", "split"])  # 附带所属拆分
+        for window_name, anno_str, img_str, edge_str, sp in mask_rows:
+          w.writerow([window_name, anno_str, img_str, edge_str, sp or ""])
+      else:
+        w.writerow(["window", "anno_mask", "img_mask", "edge_pad"])  # 1-based 索引，逗号分隔；为空表示该类型无缺失
+        for window_name, anno_str, img_str, edge_str, _sp in mask_rows:
+          w.writerow([window_name, anno_str, img_str, edge_str])
   except Exception:
     pass
+
+  # 单数据集输出：写出 annotations/train.csv/val.csv/test.csv（无表头：path,label）
+  if single_out and splits_dir and split_index_rows:
+    try:
+      import csv
+      for sp in ("train", "val", "test"):
+        rows = split_index_rows.get(sp) or []
+        if not rows:
+          # 若该拆分为空，也写出空文件保证一致性
+          rows = []
+        out_csv = ann_out / f"{sp}.csv"
+        with open(out_csv, "w", newline="", encoding="utf-8") as f:
+          w = csv.writer(f)
+          for p, l in rows:
+            w.writerow([p, l])
+    except Exception:
+      pass
 
   try:
     samples_bar.close()

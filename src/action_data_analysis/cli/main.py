@@ -37,6 +37,10 @@ from action_data_analysis.analyze.overlap import (
 from action_data_analysis.convert.std_converter import convert_std_dataset
 from action_data_analysis.convert.std_subset import create_std_subset
 from action_data_analysis.convert.split_gt_csv import split_gt_csv
+from action_data_analysis.clean.json_cleaner import clean_labelme_json_dataset
+from action_data_analysis.convert.std_split import split_std_dataset
+from action_data_analysis.clean.std_filter import filter_std_dataset
+from action_data_analysis.clean.remove_tubes_by_id import remove_tubes_by_id
 
 
 def _add_export_samples_parser(subparsers) -> None:
@@ -101,6 +105,15 @@ def _add_time_bins_parser(subparsers) -> None:
   p.add_argument("--out", required=True, dest="out_dir", help="输出目录")
 
 
+def _add_clean_json_parser(subparsers) -> None:
+  p = subparsers.add_parser("clean-json", help="清洗 LabelMe JSON（std）：3σ 异常大框剔除整条 tube，且对非 hold/noball 的过长 tube 进行剔除")
+  p.add_argument("dirs", nargs="+", help="std 根目录、videos 目录、或 videos/* 样例目录")
+  p.add_argument("--out", required=True, dest="out_dir", help="输出 std 根目录（仅写 JSON）")
+  p.add_argument("--sigma", type=float, default=3.0, help="异常大框阈值：mean + sigma*std，默认 3.0")
+  p.add_argument("--max-len", type=int, default=64, dest="max_len", help="过长 tube 的长度阈值（帧），默认 64")
+  p.add_argument("--exceptions", nargs="*", default=["hold", "noball"], help="不过滤的动作名（大小写不敏感），默认: hold noball")
+
+
 def _add_convert_std_parser(subparsers) -> None:
   p = subparsers.add_parser("convert-std", help="将 std 数据集按标签映射转换为 converted 目录，并清理空样例")
   p.add_argument("std_root", help="std 根目录（包含 videos 与可选 stats）")
@@ -138,19 +151,55 @@ def main() -> None:
   _add_analyze_tube_lengths_parser(subparsers)
   _add_plot_tube_lengths_parser(subparsers)
   _add_time_bins_parser(subparsers)
+  _add_clean_json_parser(subparsers)
   _add_convert_std_parser(subparsers)
+  # 新增：std 过滤（按样例名 include/exclude 前缀）
+  def _add_filter_std_parser(subparsers) -> None:
+    p = subparsers.add_parser("filter-std", help="从 std 中按样例名前缀筛选，输出新的 std 目录")
+    p.add_argument("dirs", nargs="+", help="std 根目录、videos 目录或 videos/* 样例目录")
+    p.add_argument("--out", dest="out_root", default="", help="输出 std 根目录（默认：<std_root>_filtered）")
+    p.add_argument("--include-prefix", dest="include_prefixes", nargs="*", default=[], help="仅保留以任一此前缀开头的样例名（留空表示不过滤）")
+    p.add_argument("--exclude-prefix", dest="exclude_prefixes", nargs="*", default=[], help="排除以任一此前缀开头的样例名")
+  _add_filter_std_parser(subparsers)
+  # 新增：按 txt(video_id,track_id) 移除 tube（逐帧删 shape）
+  def _add_remove_tubes_parser(subparsers) -> None:
+    p = subparsers.add_parser("remove-tubes", help="按 txt(video_id,track_id) 从 std 删除对应 tube（仅改 JSON）")
+    p.add_argument("dirs", nargs="+", help="std 根目录、videos 目录或 videos/* 样例目录")
+    p.add_argument("txt", help="包含 video_id,track_id 的文本文件路径")
+    p.add_argument("--out", dest="out_root", required=True, help="输出 std 根目录（仅写 JSON）")
+  _add_remove_tubes_parser(subparsers)
+  # 新增：std 数据集按比例切分为 train/val/test CSV（写入 annotations）
+  def _add_split_std_parser(subparsers) -> None:
+    p = subparsers.add_parser("split-std", help="对 std 标准数据集按比例划分，生成 annotations/train.csv val.csv test.csv")
+    p.add_argument("std_root", help="std 根目录（包含 videos 子目录）")
+    p.add_argument("--out", dest="out_dir", default="", help="输出目录（默认写入 <std_root>/annotations）")
+    p.add_argument("--ratios", nargs=3, type=float, default=[8,1,1], help="切分比例 train val test，如 8 1 1")
+    p.add_argument("--seed", type=int, default=42, help="随机种子")
+    p.add_argument("--infer-labels", action="store_true", help="根据样例内 JSON 频次推断标签名，CSV 第二列写入标签名；否则统一写 unknown")
+  _add_split_std_parser(subparsers)
   # 新增：导出 tube 视频（std）
   def _add_export_tubes_parser(subparsers) -> None:
-    p = subparsers.add_parser("export-tubes", help="从 std 目录导出每条 tube 的视频 (25fps, 224x224)")
+    p = subparsers.add_parser("export-tubes", help="从 std 目录导出每条 tube 的视频 (默认 25fps, 224x224)")
     p.add_argument("dirs", nargs="+", help="std 根目录、videos 目录或 videos/* 样例目录")
     p.add_argument("--out", required=True, dest="out_dir", help="输出根目录")
     p.add_argument("--strategy", choices=["letterbox", "square"], default="letterbox", help="导出策略")
     p.add_argument("--fps", type=int, default=25, help="输出帧率 (默认25)")
-    p.add_argument("--size", type=int, default=224, help="输出分辨率，边长，默认224")
+    p.add_argument("--size", type=int, default=224, help="输出分辨率，边长（正方形），默认224。若提供 --width 与 --height，则忽略该参数")
+    p.add_argument("--width", type=int, default=None, help="输出宽度（如 128）")
+    p.add_argument("--height", type=int, default=None, help="输出高度（如 176）")
     p.add_argument("--min-len", type=int, default=1, help="最小 tube 帧数过滤")
     p.add_argument("--labels", dest="labels_json", default="", help="labels_dict.json 的路径（可选）。若不提供，将尝试使用 <out>/annotations/labels_dict.json")
   _add_export_tubes_parser(subparsers)
   _add_subset_std_parser(subparsers)
+  # 新增：上采样帧率（按整倍数复制帧）
+  def _add_upsample_fps_parser(subparsers) -> None:
+    p = subparsers.add_parser("upsample-fps", help="将 std 数据集从 src_fps 上采样到 dst_fps（整倍数），复制帧并更新 JSON imagePath 与 annotations/frames")
+    p.add_argument("dirs", nargs="+", help="std 根目录、videos 目录或 videos/* 样例目录")
+    p.add_argument("--src-fps", dest="src_fps", required=True, type=int, help="源 fps")
+    p.add_argument("--dst-fps", dest="dst_fps", required=True, type=int, help="目标 fps（需为源 fps 的整倍数）")
+    p.add_argument("--out", dest="out_root", default="", help="输出 std 根目录（默认：<std_root>_fpsxK）")
+    p.add_argument("--progress", dest="progress", choices=["frames", "samples"], default="frames", help="进度条显示方式：按帧或按样例")
+  _add_upsample_fps_parser(subparsers)
   # 新增：按 tube 拆分样例，生成新的 std 数据集
   def _add_split_by_tube_parser(subparsers) -> None:
     p = subparsers.add_parser("split-by-tube", help="将 std 样例按时空管拆分为新的 std 数据集")
@@ -160,11 +209,15 @@ def main() -> None:
   _add_split_by_tube_parser(subparsers)
   # 新增：按 fps 窗口切分 tube，生成新的 std 数据集，并记录缺失标注掩码
   def _add_split_by_tube_fpswin_parser(subparsers) -> None:
-    p = subparsers.add_parser("split-by-tube-fpswin", help="按 fps 窗口切分 tube（win=fps, stride=fps//2），缺失帧用最近标注补全并写 annotations/mask.csv")
+    p = subparsers.add_parser("split-by-tube-fpswin", help="按 fps 窗口切分 tube（win=fps, 可选 stride），支持基于样例拆分的单数据集输出，缺失帧用最近标注补全并写 annotations/mask.csv")
     p.add_argument("dirs", nargs="+", help="std 根目录、videos 目录或 videos/* 样例目录")
     p.add_argument("--out", dest="out_dir", default="", help="输出根目录（默认：<std_root>_by_tube_fpswin）")
-    p.add_argument("--fps", type=int, required=True, help="窗口长度（帧）= fps，步长= fps//2")
+    p.add_argument("--fps", type=int, required=True, help="窗口长度（帧）= fps")
+    p.add_argument("--stride", type=int, default=0, help="步长（帧）；默认 0 表示使用 fps//2")
     p.add_argument("--min-len", type=int, default=1, help="最小 tube 帧数过滤")
+    p.add_argument("--splits", dest="splits_dir", default="", help="读取 <splits>/train.csv,val.csv,test.csv 作为样例清单（单数据集输出推荐）")
+    p.add_argument("--single", dest="single_out", action="store_true", help="启用单数据集输出：统一写入 <out>/videos，并写出 annotations/{train,val,test}.csv 与带 split 的 mask.csv")
+    p.add_argument("--img-pad-edges", dest="pad_edges_images", action="store_true", help="窗口越界 tube 边界时，使用 tube 首/尾帧图片+标注向外复制补全；mask 增加 edge_pad 标记")
   _add_split_by_tube_fpswin_parser(subparsers)
   # 新增：按比例切分 gt.csv
   def _add_split_gt_csv_parser(subparsers) -> None:
@@ -190,6 +243,12 @@ def main() -> None:
     p2.add_argument("--inplace", action="store_true", help="就地在 videos_root/<video_id> 写 JSON，不复制图片")
     p2.add_argument("--copy-images", action="store_true", help="当非 inplace 时复制图片到输出目录")
   _add_std_pkl_parsers(subparsers)
+  # 新增：tube 数据集统计（基于 videos/ 和 annotations/{train,val,test}.csv, labels_dict.json）
+  def _add_tube_stats_parser(subparsers) -> None:
+    p = subparsers.add_parser("tube-stats", help="统计 tube 数据集（train/val/test 类别分布、缺失路径等）")
+    p.add_argument("root", help="tube 数据集根目录（包含 videos 与 annotations）")
+    p.add_argument("--out", dest="out_dir", default="", help="输出目录（默认打印到 stdout）")
+  _add_tube_stats_parser(subparsers)
 
   args = parser.parse_args()
 
@@ -306,6 +365,22 @@ def main() -> None:
     return
     return
 
+  if args.command == "clean-json":
+    leafs = _discover_std_sample_folders(args.dirs)
+    summary = clean_labelme_json_dataset(
+      inputs=leafs,
+      out_root=args.out_dir,
+      sigma=float(args.sigma),
+      max_len=int(args.max_len),
+      exceptions=list(args.exceptions) if args.exceptions else ["hold", "noball"],
+    )
+    import json as _json, os
+    os.makedirs(args.out_dir, exist_ok=True)
+    with open(os.path.join(args.out_dir, 'clean_summary.json'), 'w', encoding='utf-8') as f:
+      _json.dump(summary, f, ensure_ascii=False, indent=2)
+    print(_json.dumps(summary, ensure_ascii=False, indent=2))
+    return
+
   if args.command == "convert-std":
     summary = convert_std_dataset(
       std_root=args.std_root,
@@ -320,14 +395,56 @@ def main() -> None:
     print(f"[OK] converted std dataset: {summary.output_root}")
     return
 
+  if args.command == "filter-std":
+    summary = filter_std_dataset(
+      inputs=list(args.dirs),
+      out_root=(args.out_root if args.out_root else None),
+      include_prefixes=list(args.include_prefixes) if hasattr(args, 'include_prefixes') else None,
+      exclude_prefixes=list(args.exclude_prefixes) if hasattr(args, 'exclude_prefixes') else None,
+    )
+    import os, json
+    out_root = summary.get('output_root', '')
+    if out_root:
+      os.makedirs(out_root, exist_ok=True)
+      with open(os.path.join(out_root, 'filter_summary.json'), 'w', encoding='utf-8') as f:
+        json.dump(summary, f, ensure_ascii=False, indent=2)
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    return
+
+  if args.command == "remove-tubes":
+    summary = remove_tubes_by_id(
+      std_inputs=list(args.dirs),
+      remove_txt=str(args.txt),
+      out_root=str(args.out_root),
+    )
+    import json as _json
+    print(_json.dumps(summary, ensure_ascii=False, indent=2))
+    return
+
+  if args.command == "split-std":
+    ratios = list(args.ratios)
+    summary = split_std_dataset(
+      std_root=args.std_root,
+      out_dir=(args.out_dir if args.out_dir else None),
+      train_ratio=float(ratios[0]),
+      val_ratio=float(ratios[1]),
+      test_ratio=float(ratios[2]),
+      seed=int(args.seed),
+      infer_labels=bool(args.infer_labels),
+    )
+    import json as _json
+    print(_json.dumps(summary.__dict__, ensure_ascii=False, indent=2))
+    return
+
   if args.command == "export-tubes":
     from action_data_analysis.analyze.export_tube_videos import export_std_tube_videos
+    _size = (int(args.width), int(args.height)) if (hasattr(args, 'width') and hasattr(args, 'height') and args.width and args.height) else int(args.size)
     stats = export_std_tube_videos(
       inputs=list(args.dirs),
       output_root=args.out_dir,
       strategy=str(args.strategy),
       fps=int(args.fps),
-      size=int(args.size),
+      size=_size,
       min_len=int(args.min_len),
       labels_json=str(args.labels_json or ""),
     )
@@ -342,6 +459,19 @@ def main() -> None:
     with open(os.path.join(summary.output_root, 'subset_summary.json'), 'w', encoding='utf-8') as f:
       json.dump(asdict(summary), f, ensure_ascii=False, indent=2)
     print(f"[OK] subset created: {summary.output_root}")
+    return
+
+  if args.command == "upsample-fps":
+    from action_data_analysis.convert.upsample_fps import upsample_std_fps
+    summary = upsample_std_fps(
+      inputs=list(args.dirs),
+      out_root=(args.out_root if args.out_root else None),
+      src_fps=int(args.src_fps),
+      dst_fps=int(args.dst_fps),
+      progress=str(args.progress or "frames"),
+    )
+    import json as _json
+    print(_json.dumps(summary.__dict__, ensure_ascii=False, indent=2))
     return
 
   if args.command == "split-by-tube":
@@ -365,6 +495,10 @@ def main() -> None:
       out_root=(args.out_dir if args.out_dir else None),
       fps=int(args.fps),
       min_len=int(args.min_len),
+      stride=(int(args.stride) if int(args.stride) > 0 else None),
+      splits_dir=(args.splits_dir if args.splits_dir else None),
+      single_out=bool(args.single_out if hasattr(args, 'single_out') else args.single),
+      pad_edges_images=bool(args.pad_edges_images if hasattr(args, 'pad_edges_images') else args.img_pad_edges),
     )
     import os, json
     os.makedirs(summary.output_root, exist_ok=True)
@@ -411,6 +545,19 @@ def main() -> None:
     )
     import json as _json
     print(_json.dumps({"out_std_root": out_std}, ensure_ascii=False))
+    return
+
+  if args.command == "tube-stats":
+    from action_data_analysis.analyze.tube_dataset_stats import compute_tube_dataset_stats
+    stats = compute_tube_dataset_stats(args.root)
+    if args.out_dir:
+      import os, json
+      os.makedirs(args.out_dir, exist_ok=True)
+      with open(os.path.join(args.out_dir, 'tube_stats.json'), 'w', encoding='utf-8') as f:
+        json.dump(stats, f, ensure_ascii=False, indent=2)
+    else:
+      import json as _json
+      print(_json.dumps(stats, ensure_ascii=False, indent=2))
     return
 
   # 未知命令（理论不会到这，因为 required=True）

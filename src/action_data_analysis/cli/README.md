@@ -20,6 +20,37 @@
   ```
 - 发现规则：CLI 的统计命令会自动从 `<root>/videos/*` 收集样例目录。
 
+## 数据清洗（std）：clean-json
+
+对 LabelMe JSON（std/videos/*）执行两条硬规则清洗：
+- 3σ 异常大框：若某条 tube 在任意帧的 bbox 宽或高超过全局阈值（mean + sigma·std，默认 sigma=3.0），剔除该 tube 片段的所有标注；
+- 过长 tube 剔除：对除 `hold` 与 `noball` 外的动作，若片段长度（帧数）超过 `--max-len`（默认 64），剔除该 tube 片段。
+
+说明：
+- 输入可为 std 根目录、`videos` 目录或若干 `videos/*` 样例目录（自动发现样例）；
+- 输出仅写 JSON 到新的 std 根目录（镜像 `videos/*` 结构），不复制图片；
+- 将生成 `clean_summary.json` 汇总统计（阈值、剔除计数等）。
+
+示例：
+```bash
+# 基本用法（默认：sigma=3.0，max-len=64，exceptions=[hold, noball]）
+python -m action_data_analysis.cli.main clean-json \
+  /path/to/<Dataset>_std \
+  --out /path/to/<Dataset>_std_clean
+
+# 指定阈值（更严格/宽松）与例外动作
+python -m action_data_analysis.cli.main clean-json \
+  /path/to/<Dataset>_std/videos \
+  --out /path/to/<Dataset>_std_clean \
+  --sigma 2.5 --max-len 48 --exceptions hold noball idle
+
+# 绝对路径示例（MultiSports）
+python -m action_data_analysis.cli.main clean-json \
+  /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted \
+  --out /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted_clean \
+  --sigma 3.0 --max-len 64
+```
+
 ## std ↔ pkl 转换
 
 将 std（LabelMe 帧标注目录）与标准 PKL 之间互转。
@@ -196,6 +227,17 @@ python -m action_data_analysis.cli.main export-tubes \
   --strategy square --fps 25 --size 224 \
   --labels /storage/wangxinxing/code/action_data_analysis/datasets/multisports/results/labels_dict.json
 
+python -m action_data_analysis.cli.main export-tubes \
+  /storage/wangxinxing/code/action_data_analysis/data/FineSports_json_std_converted_fpsx5_std_by_tube_fpswin_single \
+  --out /storage/wangxinxing/code/action_data_analysis/data/FineSports_tube_std_converted_fpsx5_std_by_tube_fpswin_single \
+  --strategy square --fps 15 --size 224 \
+  --labels /storage/wangxinxing/code/action_data_analysis/datasets/multisports/results/labels_dict.json
+
+python -m action_data_analysis.cli.main export-tubes \
+  /storage/wangxinxing/code/action_data_analysis/data/FineSports_json_std_converted_fpsx5_std_by_tube_fpswin_single \
+  --out /storage/wangxinxing/code/action_data_analysis/data/FineSports_tube_std_converted_fpsx5_128x176 \
+  --strategy square --fps 15 --width 128 --height 176 \
+  --labels /storage/wangxinxing/code/action_data_analysis/datasets/multisports/results/labels_dict.json
 ```
 
 - 输入路径可为 std 根目录、`videos` 目录或若干 `videos/*` 样例目录（自动发现样例）。
@@ -296,6 +338,63 @@ python -m action_data_analysis.cli.main analyze-tube-lengths \
 
 - 导出样例、平铺合并等见 `README.md` 主文档与 `src/action_data_analysis/analyze/*`。
 
+## 合并多个 tube 数据集（videos + annotations/{train,val,test}.csv + labels_dict.json）
+
+将两个或多个同构 tube 数据集合并为一个：统一标签空间（基于名称并集，稳定排序），按 CSV 合并 `train/val/test`，并复制对应 `videos/` 下的样例（支持目录或单个 mp4）。
+
+```bash
+python -m action_data_analysis.convert.merge_tube_datasets \
+  /path/to/dataset_A \
+  /path/to/dataset_B \
+  --out /path/to/dataset_merged
+
+# 绝对路径示例
+python -m action_data_analysis.convert.merge_tube_datasets \
+  /storage/wangxinxing/data/dsA \
+  /storage/wangxinxing/data/dsB \
+  --out /storage/wangxinxing/data/ds_merged
+```
+
+- 输入结构要求：每个输入目录包含：
+  - `videos/`：样例目录或文件（如 `videos/<sample>/...` 或 `videos/<sample>.mp4`）
+  - `annotations/train.csv`、`annotations/val.csv`、`annotations/test.csv`：两列 `path,label`（可无表头；`path` 可为 `videos/...` 或绝对路径；`label` 可为数字 id 或名称）
+  - `annotations/labels_dict.json`：可为 `{"0":"contest"}` 或 `{"contest":0}`，都会被自动识别
+
+- 输出：
+  - `<out>/videos/`：复制并去重后的样例（保持 `videos/` 之后的层级）
+  - `<out>/annotations/{train,val,test}.csv`：路径已重写为合并后的相对路径，标签已按新 `labels_dict.json` 的 id 重映射
+  - `<out>/annotations/labels_dict.json`：合并后的全局标签字典（`{"0":"labelA"}` 形式）
+
+注意：当 `path` 为绝对路径时，工具会尝试回溯到其 `videos/` 之后的层级；若无法识别，则退化为使用 basename 作为样例名。
+
+## 统计 tube 数据集（train/val/test 类别分布与缺失路径）
+
+对已整理为 tube 结构的数据集进行快速统计（包含 `videos/` 与 `annotations/{train,val,test}.csv`、`labels_dict.json`）：输出每个 split 的类别分布（按 id 与按名称）、样本数、去重样本数以及缺失的路径清单。
+
+```bash
+python -m action_data_analysis.cli.main tube-stats \
+  /path/to/tube_dataset_root \
+  --out /path/to/output
+
+# 无 --out 时打印到 stdout
+python -m action_data_analysis.cli.main tube-stats /storage/wangxinxing/data/TubeDataset
+```
+
+- 输入：`root` 为数据集根目录（需包含 `videos/` 与 `annotations/`）
+- 输出：当提供 `--out` 时写出 `tube_stats.json`，结构示例：
+
+```json
+{
+  "root": "/path/to/tube_dataset_root",
+  "labels": {"0": "contest", "1": "pass"},
+  "counts_by_id": {"train": {"0": 120, "1": 80}, "val": {"0": 15}, "test": {"1": 10}},
+  "counts_by_name": {"train": {"contest": 120, "pass": 80}},
+  "num_samples": {"train": 200, "val": 30, "test": 20},
+  "unique_samples": 240,
+  "missing": ["videos/xxx/yyy"]
+}
+```
+
 ## 按时空管拆分为新的 std 数据集（std → std_by_tube）
 
 将一个样例目录中包含的多条时空管，拆分为多个新样例；每个新样例只保留该 tube 覆盖到的帧图片以及对应 JSON，且 JSON 中仅保留该 tube 的 shape（同帧其他 tube 标注全部移除）。
@@ -337,26 +436,63 @@ python -m action_data_analysis.cli.main split-by-tube \
 
 
 ```bash
+# 基本滑窗（win=fps，stride 默认= fps//2）
 python -m action_data_analysis.cli.main split-by-tube-fpswin \
   /path/to/<Dataset>_std \
   --out /path/to/<Dataset>_std_by_tube_fpswin \
   --fps 25 \
   --min-len 1
 
+# 自定义步长 stride
+python -m action_data_analysis.cli.main split-by-tube-fpswin \
+  /path/to/<Dataset>_std \
+  --out /path/to/<Dataset>_std_by_tube_fpswin \
+  --fps 25 --stride 12
+
+# 基于样例拆分生成“单数据集输出”
+# 先生成样例级拆分
+python -m action_data_analysis.cli.main split-std \
+  /path/to/<Dataset>_std --ratios 8 1 1 --seed 42
+
+# 再按拆分滑窗，统一写入一个数据集下，并在 annotations 写出 {train,val,test}.csv 与带 split 的 mask.csv
+python -m action_data_analysis.cli.main split-by-tube-fpswin \
+  /path/to/<Dataset>_std \
+  --out /path/to/<Dataset>_std_by_tube_fpswin_single \
+  --fps 25 --stride 12 \
+  --splits /path/to/<Dataset>_std/annotations \
+  --single
+
+# 绝对路径示例
 python -m action_data_analysis.cli.main split-by-tube-fpswin \
   /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted_subset \
-  --out /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted_subset_std_by_tube_fpswin \
-  --fps 25
+  --out /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted_subset_std_by_tube_fpswin_single \
+  --fps 25 --stride 12 \
+  --splits /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted_subset/annotations \
+  --single
 
 python -m action_data_analysis.cli.main split-by-tube-fpswin \
-  /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted \
-  --out /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted_std_by_tube_fpswin \
-  --fps 25
+  /storage/wangxinxing/code/action_data_analysis/data/FineSports_json_std_converted \
+  --out /storage/wangxinxing/code/action_data_analysis/data/FineSports_json_std_converted_std_by_tube_fpswin_single \
+  --fps 6 --stride 3 \
+  --splits /storage/wangxinxing/code/action_data_analysis/data/FineSports_json_std_converted/annotations \
+  --single
+  
+python -m action_data_analysis.cli.main split-by-tube-fpswin \
+  /storage/wangxinxing/code/action_data_analysis/temp2/FineSports_json_std_converted_subset \
+  --out /storage/wangxinxing/code/action_data_analysis/temp2/FineSports_json_std_converted_subset_std_by_tube_fpswin_single \
+  --fps 6 --stride 3 \
+  --splits /storage/wangxinxing/code/action_data_analysis/temp2/FineSports_json_std_converted_subset/annotations \
+  --single
 ```
 
 - 输出结构：
-  - `<out>/videos/<orig_sample>__tid<ID>__seg<K>__win<W>/...`（窗口内所有帧均有 JSON；缺标用最近标注补全）
-  - `<out>/annotations/mask.csv`（四列：window,frame_index,missing,source_frame）
+  - 常规：
+    - `<out>/videos/<orig_sample>__tid<ID>__seg<K>__win<W>/...`（窗口内所有帧均有 JSON；缺标用最近标注补全）
+    - `<out>/annotations/mask.csv`（列：window,anno_mask,img_mask；为稀疏写法，值是 1..win 的逗号串）
+  - 单数据集输出（配合 `--splits` 与 `--single`）：
+    - 同上 `videos/` 结构
+    - `<out>/annotations/{train,val,test}.csv`（两列：path,label）
+    - `<out>/annotations/mask.csv`（四列：window,anno_mask,img_mask,split）
   - `<out>/split_fpswin_summary.json`（处理汇总）
 
 ## 切分 gt.csv 为 train/val/test
@@ -390,3 +526,91 @@ python -m action_data_analysis.cli.main split-gt-csv \
   - 无表头
   - 已删除 `frames` 列
   - 视频路径列已添加前缀（默认 `videos/`）
+
+## 标准数据集（std）按比例划分为 train/val/test 列表
+
+- 功能：
+  - 自动从 `<std_root>/videos/*` 发现样例目录
+  - 按比例随机划分为 train/val/test 三个列表
+  - 将结果写入 `<std_root>/annotations/{train,val,test}.csv`
+  - CSV 两列：`path,label`（无表头）。`path` 为相对路径 `videos/<sample>`；`label` 默认为 `unknown`，可选开启 `--infer-labels` 从样例 JSON 中按频次推断主标签名。
+
+```bash
+# 基本用法（默认比例 8:1:1），写入 <std_root>/annotations
+python -m action_data_analysis.cli.main split-std \
+  /path/to/<Dataset>_std
+
+# 指定比例/随机种子/输出目录
+python -m action_data_analysis.cli.main split-std \
+  /path/to/<Dataset>_std \
+  --ratios 8 1 1 \
+  --seed 42 \
+  --out /path/to/<Dataset>_std/annotations
+
+# 可选：根据 JSON 推断样例标签名写入第二列（无则为 unknown）
+python -m action_data_analysis.cli.main split-std \
+  /path/to/<Dataset>_std \
+  --infer-labels
+
+# 绝对路径示例
+python -m action_data_analysis.cli.main split-std \
+  /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted_subset \
+  --ratios 8 1 1 --seed 42
+```
+
+- 输出：
+  - `<std_root>/annotations/train.csv`（含表头：tube,label,frames）
+  - `<std_root>/annotations/val.csv`（含表头：tube,label,frames）
+  - `<std_root>/annotations/test.csv`（含表头：tube,label,frames）
+  - 行示例：
+    ```text
+    tube,label,frames
+    videos/sample_0001,unknown,300
+    ```
+
+## 按样例名前缀过滤并生成新的 std（filter-std）
+
+- 功能：从现有 std 数据集中过滤掉（或仅保留）特定样例名（`videos/<sample>` 的 `<sample>`）的前缀集合，生成新的 std 目录。
+
+```bash
+# 基本用法：排除指定前缀
+python -m action_data_analysis.cli.main filter-std \
+  /path/to/<Dataset>_std \
+  --out /path/to/<Dataset>_std_filtered \
+  --exclude-prefix bad_prefix_A bad_prefix_B
+
+# 仅保留指定前缀（与排除可叠加，先 include 后 exclude）
+python -m action_data_analysis.cli.main filter-std \
+  /path/to/<Dataset>_std \
+  --include-prefix keepA keepB \
+  --exclude-prefix dropX
+
+# 绝对路径示例（MultiSports）：排除以 v_2BhBRkkAqbQ_c 与 v_-9kabh1K8UA_c 开头的样例
+python -m action_data_analysis.cli.main filter-std \
+  /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted \
+  --out /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted_filtered \
+  --exclude-prefix v_2BhBRkkAqbQ_c v_-9kabh1K8UA_c
+```
+
+- 输入路径支持：std 根目录、`videos` 目录、或若干 `videos/*` 样例目录（自动发现样例）。
+- 输出：`<out>/videos/<kept_sample>/...` 与 `filter_summary.json`（记录输入样例数、保留数、移除数与规则）。
+
+## 按 video_id,track_id 删除 tube（remove-tubes）
+
+- 功能：根据一个文本清单（每行 `video_id,track_id`），在标准数据集（LabelMe JSON）中删除对应 tube 的标注（逐帧删除该 tid 的 shapes），输出新的 std（仅 JSON）。
+
+```bash
+# 变量按需替换
+STD=/storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted
+TXT=/path/to/remove_list.txt        # 每行: video_id,track_id
+OUT=/storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted_removed
+
+python -m action_data_analysis.cli.main remove-tubes \
+  "$STD" \
+  "$TXT" \
+  --out "$OUT"
+```
+
+- 输入：std 根、`videos` 目录或若干 `videos/*` 样例目录（自动发现样例）。
+- 清单：纯文本文件，每行一个 `video_id,track_id`（逗号或制表符分隔，支持注释行 `#...`）。
+- 输出：在 `--out` 下生成镜像的 `videos/<video>/` 目录，仅写 JSON；写出 `remove_tubes_summary.json` 汇总移除统计。

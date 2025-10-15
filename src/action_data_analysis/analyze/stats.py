@@ -246,7 +246,8 @@ def compute_aggregate_stats(folders: List[str]) -> Dict[str, Any]:
   num_boxes = 0
   num_images_total = 0
 
-  pbar = tqdm(total=len(folders), desc="analyze folders", unit="folder")
+  # 外层：按样例数量的进度条
+  pbar = tqdm(total=len(folders), desc="analyze samples", unit="sample")
   for folder in folders:
     s = compute_labelme_folder_stats(folder)
     for k, v in s.get("bbox_normalized", {}).get("anomalies", {}).items():
@@ -265,6 +266,10 @@ def compute_aggregate_stats(folders: List[str]) -> Dict[str, Any]:
     ignored_shapes_without_id_total += int(st.get("ignored_shapes_without_id", 0))
     # 无法从已聚合结果恢复原始样本，因此此处直接跳过合并宽高分布的精确值。
     # 为了近似，我们不再合并单目录的分位数，而是在聚合时重新遍历一次以收集值。
+    try:
+      pbar.update(1)
+    except Exception:
+      pass
 
   # 为了获得正确的分布，重新二次遍历以收集 bbox 归一化尺寸
   for folder in folders:
