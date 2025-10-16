@@ -1,0 +1,2337 @@
+{
+  "root": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json",
+  "samples": 508,
+  "changes": 97,
+  "disappear_only": 0,
+  "appear_only": 0,
+  "changes_detail": [
+    {
+      "sample": "v_-6Os86HzwCs_c004",
+      "frame_idx_a": 30,
+      "frame_idx_b": 31,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_-6Os86HzwCs_c004/000030.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_-6Os86HzwCs_c004/000031.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 6,
+      "gid_b": 1,
+      "iou": 0.811965811965812,
+      "bbox_a": [
+        1015.0,
+        339.0,
+        1065.0,
+        453.0
+      ],
+      "bbox_b": [
+        1015.0,
+        339.0,
+        1075.0,
+        456.0
+      ]
+    },
+    {
+      "sample": "v_00HRwkvvjtQ_c001",
+      "frame_idx_a": 575,
+      "frame_idx_b": 576,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_00HRwkvvjtQ_c001/000575.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_00HRwkvvjtQ_c001/000576.json",
+      "action_a": "screen",
+      "action_b": "noball",
+      "gid_a": 18,
+      "gid_b": 50,
+      "iou": 0.20020497806991333,
+      "bbox_a": [
+        396.667,
+        164.667,
+        480.0,
+        289.333
+      ],
+      "bbox_b": [
+        433.333,
+        214.667,
+        503.333,
+        364.667
+      ]
+    },
+    {
+      "sample": "v_00HRwkvvjtQ_c003",
+      "frame_idx_a": 566,
+      "frame_idx_b": 567,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_00HRwkvvjtQ_c003/000566.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_00HRwkvvjtQ_c003/000567.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 40,
+      "gid_b": 30,
+      "iou": 0.6987201208527829,
+      "bbox_a": [
+        873.333,
+        191.333,
+        965.333,
+        306.0
+      ],
+      "bbox_b": [
+        888.0,
+        202.0,
+        959.333,
+        305.333
+      ]
+    },
+    {
+      "sample": "v_00HRwkvvjtQ_c006",
+      "frame_idx_a": 350,
+      "frame_idx_b": 351,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_00HRwkvvjtQ_c006/000350.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_00HRwkvvjtQ_c006/000351.json",
+      "action_a": "hold",
+      "action_b": "hold",
+      "gid_a": 7,
+      "gid_b": 12,
+      "iou": 0.8177524450816844,
+      "bbox_a": [
+        1000.0,
+        366.0,
+        1122.667,
+        514.0
+      ],
+      "bbox_b": [
+        1008.0,
+        362.0,
+        1131.333,
+        520.667
+      ]
+    },
+    {
+      "sample": "v_00HRwkvvjtQ_c011",
+      "frame_idx_a": 990,
+      "frame_idx_b": 991,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_00HRwkvvjtQ_c011/000990.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_00HRwkvvjtQ_c011/000991.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 18,
+      "gid_b": 30,
+      "iou": 0.40646709035128925,
+      "bbox_a": [
+        478.0,
+        246.0,
+        617.333,
+        449.333
+      ],
+      "bbox_b": [
+        532.0,
+        253.333,
+        645.333,
+        514.0
+      ]
+    },
+    {
+      "sample": "v_2j7kLB-vEEk_c007",
+      "frame_idx_a": 301,
+      "frame_idx_b": 302,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_2j7kLB-vEEk_c007/000301.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_2j7kLB-vEEk_c007/000302.json",
+      "action_a": "hold",
+      "action_b": "screen",
+      "gid_a": 9,
+      "gid_b": 16,
+      "iou": 0.34947754871505227,
+      "bbox_a": [
+        425.0,
+        359.0,
+        544.0,
+        528.0
+      ],
+      "bbox_b": [
+        431.0,
+        276.0,
+        530.0,
+        459.0
+      ]
+    },
+    {
+      "sample": "v_2j7kLB-vEEk_c009",
+      "frame_idx_a": 1212,
+      "frame_idx_b": 1213,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_2j7kLB-vEEk_c009/001212.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_2j7kLB-vEEk_c009/001213.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 14,
+      "gid_b": 2,
+      "iou": 0.6407322654462243,
+      "bbox_a": [
+        871.0,
+        271.0,
+        961.0,
+        411.0
+      ],
+      "bbox_b": [
+        856.0,
+        265.0,
+        941.0,
+        412.0
+      ]
+    },
+    {
+      "sample": "v_2j7kLB-vEEk_c009",
+      "frame_idx_a": 1535,
+      "frame_idx_b": 1536,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_2j7kLB-vEEk_c009/001535.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_2j7kLB-vEEk_c009/001536.json",
+      "action_a": "contest",
+      "action_b": "contest",
+      "gid_a": 29,
+      "gid_b": 26,
+      "iou": 0.14680034019741758,
+      "bbox_a": [
+        770.0,
+        273.0,
+        933.0,
+        456.0
+      ],
+      "bbox_b": [
+        726.0,
+        278.0,
+        802.0,
+        471.0
+      ]
+    },
+    {
+      "sample": "v_42VrMbd68Zg_c003",
+      "frame_idx_a": 744,
+      "frame_idx_b": 745,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_42VrMbd68Zg_c003/000744.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_42VrMbd68Zg_c003/000745.json",
+      "action_a": "hold",
+      "action_b": "hold",
+      "gid_a": 33,
+      "gid_b": 25,
+      "iou": 0.7570679763023361,
+      "bbox_a": [
+        905.0,
+        352.98,
+        979.0,
+        524.457
+      ],
+      "bbox_b": [
+        899.0,
+        367.02,
+        981.0,
+        508.412
+      ]
+    },
+    {
+      "sample": "v_42VrMbd68Zg_c003",
+      "frame_idx_a": 2320,
+      "frame_idx_b": 2321,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_42VrMbd68Zg_c003/002320.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_42VrMbd68Zg_c003/002321.json",
+      "action_a": "hold",
+      "action_b": "hold",
+      "gid_a": 49,
+      "gid_b": 28,
+      "iou": 0.7192932808850843,
+      "bbox_a": [
+        312.0,
+        350.975,
+        421.0,
+        521.448
+      ],
+      "bbox_b": [
+        321.0,
+        361.003,
+        442.0,
+        518.44
+      ]
+    },
+    {
+      "sample": "v_42VrMbd68Zg_c003",
+      "frame_idx_a": 2554,
+      "frame_idx_b": 2555,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_42VrMbd68Zg_c003/002554.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_42VrMbd68Zg_c003/002555.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 42,
+      "gid_b": 14,
+      "iou": 0.8633696660482377,
+      "bbox_a": [
+        935.0,
+        217.604,
+        1045.0,
+        390.084
+      ],
+      "bbox_b": [
+        942.0,
+        223.621,
+        1041.0,
+        389.081
+      ]
+    },
+    {
+      "sample": "v_4LXTUim5anY_c005",
+      "frame_idx_a": 113,
+      "frame_idx_b": 114,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_4LXTUim5anY_c005/000113.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_4LXTUim5anY_c005/000114.json",
+      "action_a": "hold",
+      "action_b": "shoot",
+      "gid_a": 1,
+      "gid_b": 4,
+      "iou": 0.9207466299019602,
+      "bbox_a": [
+        778.0,
+        296.667,
+        839.333,
+        394.667
+      ],
+      "bbox_b": [
+        776.0,
+        295.333,
+        840.0,
+        397.333
+      ]
+    },
+    {
+      "sample": "v_4LXTUim5anY_c006",
+      "frame_idx_a": 330,
+      "frame_idx_b": 331,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_4LXTUim5anY_c006/000330.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_4LXTUim5anY_c006/000331.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 1,
+      "gid_b": 2,
+      "iou": 0.8314568584651103,
+      "bbox_a": [
+        399.333,
+        364.0,
+        525.333,
+        507.333
+      ],
+      "bbox_b": [
+        388.0,
+        360.667,
+        521.333,
+        500.667
+      ]
+    },
+    {
+      "sample": "v_4r8QL_wglzQ_c007",
+      "frame_idx_a": 242,
+      "frame_idx_b": 243,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_4r8QL_wglzQ_c007/000242.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_4r8QL_wglzQ_c007/000243.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 7,
+      "gid_b": 6,
+      "iou": 0.6686916901714037,
+      "bbox_a": [
+        694.0,
+        277.0,
+        762.0,
+        415.0
+      ],
+      "bbox_b": [
+        695.0,
+        252.0,
+        776.0,
+        421.0
+      ]
+    },
+    {
+      "sample": "v_5ekaksddqrc_c001",
+      "frame_idx_a": 324,
+      "frame_idx_b": 325,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_5ekaksddqrc_c001/000324.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_5ekaksddqrc_c001/000325.json",
+      "action_a": "screen",
+      "action_b": "hold",
+      "gid_a": 11,
+      "gid_b": 8,
+      "iou": 0.5561643835616439,
+      "bbox_a": [
+        976.0,
+        361.0,
+        1036.0,
+        487.0
+      ],
+      "bbox_b": [
+        966.0,
+        346.0,
+        1034.0,
+        452.0
+      ]
+    },
+    {
+      "sample": "v_5ekaksddqrc_c001",
+      "frame_idx_a": 582,
+      "frame_idx_b": 583,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_5ekaksddqrc_c001/000582.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_5ekaksddqrc_c001/000583.json",
+      "action_a": "hold",
+      "action_b": "screen",
+      "gid_a": 9,
+      "gid_b": 12,
+      "iou": 0.0,
+      "bbox_a": [
+        741.0,
+        484.0,
+        834.0,
+        632.0
+      ],
+      "bbox_b": [
+        650.0,
+        423.0,
+        716.0,
+        608.0
+      ]
+    },
+    {
+      "sample": "v_5ekaksddqrc_c005",
+      "frame_idx_a": 190,
+      "frame_idx_b": 191,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_5ekaksddqrc_c005/000190.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_5ekaksddqrc_c005/000191.json",
+      "action_a": "screen",
+      "action_b": "noball",
+      "gid_a": 25,
+      "gid_b": 30,
+      "iou": 0.0,
+      "bbox_a": [
+        893.0,
+        250.0,
+        988.0,
+        401.0
+      ],
+      "bbox_b": [
+        398.0,
+        413.0,
+        485.0,
+        605.0
+      ]
+    },
+    {
+      "sample": "v_5ekaksddqrc_c005",
+      "frame_idx_a": 673,
+      "frame_idx_b": 674,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_5ekaksddqrc_c005/000673.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_5ekaksddqrc_c005/000674.json",
+      "action_a": "hold",
+      "action_b": "noball",
+      "gid_a": 13,
+      "gid_b": 28,
+      "iou": 0.20152091254752852,
+      "bbox_a": [
+        762.0,
+        296.0,
+        830.0,
+        410.0
+      ],
+      "bbox_b": [
+        743.0,
+        290.0,
+        781.0,
+        402.0
+      ]
+    },
+    {
+      "sample": "v_5ekaksddqrc_c005",
+      "frame_idx_a": 974,
+      "frame_idx_b": 975,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_5ekaksddqrc_c005/000974.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_5ekaksddqrc_c005/000975.json",
+      "action_a": "contest",
+      "action_b": "rebound",
+      "gid_a": 31,
+      "gid_b": 23,
+      "iou": 0.9182883560907429,
+      "bbox_a": [
+        439.0,
+        232.0,
+        512.0,
+        474.0
+      ],
+      "bbox_b": [
+        435.0,
+        240.0,
+        512.0,
+        474.0
+      ]
+    },
+    {
+      "sample": "v_6OLC1-bhioc_c001",
+      "frame_idx_a": 961,
+      "frame_idx_b": 962,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c001/000961.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c001/000962.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 11,
+      "gid_b": 2,
+      "iou": 0.7542890188267044,
+      "bbox_a": [
+        404.0,
+        174.0,
+        495.0,
+        306.0
+      ],
+      "bbox_b": [
+        394.0,
+        164.0,
+        504.0,
+        303.0
+      ]
+    },
+    {
+      "sample": "v_6OLC1-bhioc_c004",
+      "frame_idx_a": 78,
+      "frame_idx_b": 79,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c004/000078.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c004/000079.json",
+      "action_a": "hold",
+      "action_b": "hold",
+      "gid_a": 4,
+      "gid_b": 3,
+      "iou": 0.7383143172616857,
+      "bbox_a": [
+        881.0,
+        331.0,
+        1018.0,
+        508.0
+      ],
+      "bbox_b": [
+        888.0,
+        331.0,
+        990.0,
+        510.0
+      ]
+    },
+    {
+      "sample": "v_6OLC1-bhioc_c005",
+      "frame_idx_a": 695,
+      "frame_idx_b": 696,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c005/000695.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c005/000696.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 24,
+      "gid_b": 22,
+      "iou": 0.2811714078131113,
+      "bbox_a": [
+        627.0,
+        227.0,
+        724.0,
+        399.0
+      ],
+      "bbox_b": [
+        622.0,
+        214.0,
+        670.0,
+        344.0
+      ]
+    },
+    {
+      "sample": "v_6OLC1-bhioc_c005",
+      "frame_idx_a": 1276,
+      "frame_idx_b": 1277,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c005/001276.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c005/001277.json",
+      "action_a": "hold",
+      "action_b": "hold",
+      "gid_a": 13,
+      "gid_b": 7,
+      "iou": 0.8227461623271987,
+      "bbox_a": [
+        670.0,
+        202.0,
+        769.0,
+        320.0
+      ],
+      "bbox_b": [
+        680.0,
+        209.0,
+        770.0,
+        318.0
+      ]
+    },
+    {
+      "sample": "v_6OLC1-bhioc_c007",
+      "frame_idx_a": 315,
+      "frame_idx_b": 316,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c007/000315.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c007/000316.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 11,
+      "gid_b": 3,
+      "iou": 0.8079646017699115,
+      "bbox_a": [
+        636.0,
+        283.0,
+        721.0,
+        451.0
+      ],
+      "bbox_b": [
+        626.0,
+        283.0,
+        719.0,
+        437.0
+      ]
+    },
+    {
+      "sample": "v_6OLC1-bhioc_c009",
+      "frame_idx_a": 408,
+      "frame_idx_b": 409,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c009/000408.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c009/000409.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 10,
+      "gid_b": 11,
+      "iou": 0.0,
+      "bbox_a": [
+        455.0,
+        241.0,
+        532.0,
+        416.0
+      ],
+      "bbox_b": [
+        568.0,
+        234.0,
+        639.0,
+        413.0
+      ]
+    },
+    {
+      "sample": "v_6OLC1-bhioc_c014",
+      "frame_idx_a": 89,
+      "frame_idx_b": 90,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c014/000089.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6OLC1-bhioc_c014/000090.json",
+      "action_a": "hold",
+      "action_b": "hold",
+      "gid_a": 7,
+      "gid_b": 5,
+      "iou": 0.7542983520011415,
+      "bbox_a": [
+        724.0,
+        398.0,
+        844.0,
+        596.0
+      ],
+      "bbox_b": [
+        709.0,
+        387.0,
+        833.0,
+        592.0
+      ]
+    },
+    {
+      "sample": "v_6oTxfzKdG6Q_c003",
+      "frame_idx_a": 180,
+      "frame_idx_b": 181,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6oTxfzKdG6Q_c003/000180.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6oTxfzKdG6Q_c003/000181.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 1,
+      "gid_b": 0,
+      "iou": 0.8001772825123464,
+      "bbox_a": [
+        816.0,
+        264.0,
+        916.0,
+        484.0
+      ],
+      "bbox_b": [
+        822.0,
+        245.0,
+        911.0,
+        477.0
+      ]
+    },
+    {
+      "sample": "v_6oTxfzKdG6Q_c003",
+      "frame_idx_a": 180,
+      "frame_idx_b": 181,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6oTxfzKdG6Q_c003/000180.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6oTxfzKdG6Q_c003/000181.json",
+      "action_a": "hold",
+      "action_b": "contest",
+      "gid_a": 4,
+      "gid_b": 0,
+      "iou": 0.24623398563987048,
+      "bbox_a": [
+        867.0,
+        318.0,
+        957.0,
+        482.0
+      ],
+      "bbox_b": [
+        822.0,
+        245.0,
+        911.0,
+        477.0
+      ]
+    },
+    {
+      "sample": "v_6oTxfzKdG6Q_c004",
+      "frame_idx_a": 147,
+      "frame_idx_b": 148,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6oTxfzKdG6Q_c004/000147.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_6oTxfzKdG6Q_c004/000148.json",
+      "action_a": "rebound",
+      "action_b": "hold",
+      "gid_a": 9,
+      "gid_b": 6,
+      "iou": 0.837138611186166,
+      "bbox_a": [
+        410.0,
+        246.0,
+        501.0,
+        407.0
+      ],
+      "bbox_b": [
+        409.0,
+        250.0,
+        491.0,
+        403.0
+      ]
+    },
+    {
+      "sample": "v_7FTsO8S3h88_c005",
+      "frame_idx_a": 751,
+      "frame_idx_b": 752,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_7FTsO8S3h88_c005/000751.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_7FTsO8S3h88_c005/000752.json",
+      "action_a": "noball",
+      "action_b": "shoot",
+      "gid_a": 18,
+      "gid_b": 14,
+      "iou": 0.0,
+      "bbox_a": [
+        478.667,
+        271.333,
+        548.667,
+        433.333
+      ],
+      "bbox_b": [
+        400.667,
+        289.333,
+        463.333,
+        438.667
+      ]
+    },
+    {
+      "sample": "v_7FTsO8S3h88_c005",
+      "frame_idx_a": 751,
+      "frame_idx_b": 752,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_7FTsO8S3h88_c005/000751.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_7FTsO8S3h88_c005/000752.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 18,
+      "gid_b": 15,
+      "iou": 0.7463809841981996,
+      "bbox_a": [
+        478.667,
+        271.333,
+        548.667,
+        433.333
+      ],
+      "bbox_b": [
+        471.333,
+        257.333,
+        541.333,
+        434.667
+      ]
+    },
+    {
+      "sample": "v_82WN8C8qJmI_c004",
+      "frame_idx_a": 447,
+      "frame_idx_b": 448,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_82WN8C8qJmI_c004/000447.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_82WN8C8qJmI_c004/000448.json",
+      "action_a": "screen",
+      "action_b": "hold",
+      "gid_a": 26,
+      "gid_b": 18,
+      "iou": 0.0,
+      "bbox_a": [
+        470.0,
+        382.667,
+        537.333,
+        565.333
+      ],
+      "bbox_b": [
+        249.333,
+        448.667,
+        361.333,
+        619.333
+      ]
+    },
+    {
+      "sample": "v_A4OJhlI6hgc_c005",
+      "frame_idx_a": 494,
+      "frame_idx_b": 495,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_A4OJhlI6hgc_c005/000494.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_A4OJhlI6hgc_c005/000495.json",
+      "action_a": "pass",
+      "action_b": "screen",
+      "gid_a": 11,
+      "gid_b": 19,
+      "iou": 0.6779017382516005,
+      "bbox_a": [
+        924.667,
+        252.0,
+        1033.333,
+        405.333
+      ],
+      "bbox_b": [
+        931.333,
+        255.333,
+        1018.667,
+        384.667
+      ]
+    },
+    {
+      "sample": "v_A4OJhlI6hgc_c005",
+      "frame_idx_a": 500,
+      "frame_idx_b": 501,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_A4OJhlI6hgc_c005/000500.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_A4OJhlI6hgc_c005/000501.json",
+      "action_a": "screen",
+      "action_b": "hold",
+      "gid_a": 19,
+      "gid_b": 14,
+      "iou": 0.24740897678101068,
+      "bbox_a": [
+        917.333,
+        255.333,
+        1020.667,
+        420.667
+      ],
+      "bbox_b": [
+        971.333,
+        232.0,
+        1029.333,
+        352.0
+      ]
+    },
+    {
+      "sample": "v_A4OJhlI6hgc_c005",
+      "frame_idx_a": 703,
+      "frame_idx_b": 704,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_A4OJhlI6hgc_c005/000703.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_A4OJhlI6hgc_c005/000704.json",
+      "action_a": "hold",
+      "action_b": "hold",
+      "gid_a": 12,
+      "gid_b": 2,
+      "iou": 0.7952562823591334,
+      "bbox_a": [
+        430.667,
+        266.667,
+        524.0,
+        409.333
+      ],
+      "bbox_b": [
+        430.667,
+        274.0,
+        519.333,
+        429.333
+      ]
+    },
+    {
+      "sample": "v_A4OJhlI6hgc_c602",
+      "frame_idx_a": 51,
+      "frame_idx_b": 52,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_A4OJhlI6hgc_c602/000051.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_A4OJhlI6hgc_c602/000052.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 3,
+      "gid_b": 2,
+      "iou": 0.6901734406851271,
+      "bbox_a": [
+        326.0,
+        262.0,
+        402.0,
+        368.667
+      ],
+      "bbox_b": [
+        340.667,
+        256.667,
+        411.333,
+        368.667
+      ]
+    },
+    {
+      "sample": "v_BdD9xu0E2H4_c003",
+      "frame_idx_a": 551,
+      "frame_idx_b": 552,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_BdD9xu0E2H4_c003/000551.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_BdD9xu0E2H4_c003/000552.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 13,
+      "gid_b": 8,
+      "iou": 0.8166151126822802,
+      "bbox_a": [
+        514.0,
+        322.0,
+        607.0,
+        468.0
+      ],
+      "bbox_b": [
+        520.0,
+        323.0,
+        604.0,
+        455.0
+      ]
+    },
+    {
+      "sample": "v_BdD9xu0E2H4_c010",
+      "frame_idx_a": 363,
+      "frame_idx_b": 364,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_BdD9xu0E2H4_c010/000363.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_BdD9xu0E2H4_c010/000364.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 11,
+      "gid_b": 13,
+      "iou": 0.8322661252537873,
+      "bbox_a": [
+        522.0,
+        243.0,
+        605.0,
+        463.0
+      ],
+      "bbox_b": [
+        523.0,
+        230.0,
+        596.0,
+        462.0
+      ]
+    },
+    {
+      "sample": "v_C94HDW9HYzU_c007",
+      "frame_idx_a": 234,
+      "frame_idx_b": 235,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_C94HDW9HYzU_c007/000234.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_C94HDW9HYzU_c007/000235.json",
+      "action_a": "pass",
+      "action_b": "contest",
+      "gid_a": 0,
+      "gid_b": 17,
+      "iou": 0.1489763779527559,
+      "bbox_a": [
+        692.0,
+        276.0,
+        748.0,
+        448.0
+      ],
+      "bbox_b": [
+        642.0,
+        362.0,
+        736.0,
+        570.0
+      ]
+    },
+    {
+      "sample": "v_C94HDW9HYzU_c007",
+      "frame_idx_a": 279,
+      "frame_idx_b": 280,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_C94HDW9HYzU_c007/000279.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_C94HDW9HYzU_c007/000280.json",
+      "action_a": "rebound",
+      "action_b": "shoot",
+      "gid_a": 14,
+      "gid_b": 12,
+      "iou": 0.8248386247595529,
+      "bbox_a": [
+        674.667,
+        261.333,
+        784.0,
+        540.667
+      ],
+      "bbox_b": [
+        666.667,
+        244.667,
+        779.333,
+        534.0
+      ]
+    },
+    {
+      "sample": "v_C94HDW9HYzU_c013",
+      "frame_idx_a": 204,
+      "frame_idx_b": 205,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_C94HDW9HYzU_c013/000204.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_C94HDW9HYzU_c013/000205.json",
+      "action_a": "hold",
+      "action_b": "noball",
+      "gid_a": 4,
+      "gid_b": 0,
+      "iou": 0.0,
+      "bbox_a": [
+        393.333,
+        318.0,
+        488.667,
+        476.0
+      ],
+      "bbox_b": [
+        626.0,
+        304.0,
+        719.333,
+        465.333
+      ]
+    },
+    {
+      "sample": "v_DC3D_JZQUqQ_c008",
+      "frame_idx_a": 79,
+      "frame_idx_b": 80,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_DC3D_JZQUqQ_c008/000079.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_DC3D_JZQUqQ_c008/000080.json",
+      "action_a": "hold",
+      "action_b": "hold",
+      "gid_a": 1,
+      "gid_b": 0,
+      "iou": 0.850828729281768,
+      "bbox_a": [
+        488.0,
+        174.0,
+        575.0,
+        284.0
+      ],
+      "bbox_b": [
+        497.0,
+        169.0,
+        574.0,
+        284.0
+      ]
+    },
+    {
+      "sample": "v_DC3D_JZQUqQ_c013",
+      "frame_idx_a": 442,
+      "frame_idx_b": 443,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_DC3D_JZQUqQ_c013/000442.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_DC3D_JZQUqQ_c013/000443.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 3,
+      "gid_b": 0,
+      "iou": 0.7925615505500262,
+      "bbox_a": [
+        452.0,
+        219.0,
+        557.0,
+        323.0
+      ],
+      "bbox_b": [
+        453.0,
+        213.0,
+        542.0,
+        321.0
+      ]
+    },
+    {
+      "sample": "v_EGtCLk5BksU_c009",
+      "frame_idx_a": 257,
+      "frame_idx_b": 258,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_EGtCLk5BksU_c009/000257.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_EGtCLk5BksU_c009/000258.json",
+      "action_a": "hold",
+      "action_b": "hold",
+      "gid_a": 1,
+      "gid_b": 0,
+      "iou": 0.8384098166233913,
+      "bbox_a": [
+        946.667,
+        384.667,
+        1067.333,
+        527.333
+      ],
+      "bbox_b": [
+        930.0,
+        385.333,
+        1063.333,
+        528.667
+      ]
+    },
+    {
+      "sample": "v_EGtCLk5BksU_c013",
+      "frame_idx_a": 558,
+      "frame_idx_b": 559,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_EGtCLk5BksU_c013/000558.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_EGtCLk5BksU_c013/000559.json",
+      "action_a": "hold",
+      "action_b": "shoot",
+      "gid_a": 7,
+      "gid_b": 4,
+      "iou": 0.8836814796279325,
+      "bbox_a": [
+        882.0,
+        414.0,
+        978.667,
+        566.667
+      ],
+      "bbox_b": [
+        876.0,
+        406.667,
+        978.667,
+        569.333
+      ]
+    },
+    {
+      "sample": "v_ERsBxGv2JxY_c004",
+      "frame_idx_a": 263,
+      "frame_idx_b": 264,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_ERsBxGv2JxY_c004/000263.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_ERsBxGv2JxY_c004/000264.json",
+      "action_a": "rebound",
+      "action_b": "shoot",
+      "gid_a": 3,
+      "gid_b": 1,
+      "iou": 0.891358873719797,
+      "bbox_a": [
+        446.0,
+        227.333,
+        496.667,
+        434.0
+      ],
+      "bbox_b": [
+        445.333,
+        220.667,
+        498.0,
+        424.667
+      ]
+    },
+    {
+      "sample": "v_FH9KE8FSmig_c003",
+      "frame_idx_a": 306,
+      "frame_idx_b": 307,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_FH9KE8FSmig_c003/000306.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_FH9KE8FSmig_c003/000307.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 12,
+      "gid_b": 5,
+      "iou": 0.8201203892144466,
+      "bbox_a": [
+        880.667,
+        290.667,
+        976.667,
+        424.0
+      ],
+      "bbox_b": [
+        878.667,
+        290.0,
+        966.0,
+        416.667
+      ]
+    },
+    {
+      "sample": "v_FH9KE8FSmig_c014",
+      "frame_idx_a": 211,
+      "frame_idx_b": 212,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_FH9KE8FSmig_c014/000211.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_FH9KE8FSmig_c014/000212.json",
+      "action_a": "pass",
+      "action_b": "noball",
+      "gid_a": 3,
+      "gid_b": 2,
+      "iou": 0.2598345593450853,
+      "bbox_a": [
+        382.0,
+        418.0,
+        455.333,
+        594.667
+      ],
+      "bbox_b": [
+        346.0,
+        375.333,
+        428.0,
+        534.667
+      ]
+    },
+    {
+      "sample": "v_HBJ9u9B1v3A_c003",
+      "frame_idx_a": 490,
+      "frame_idx_b": 491,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_HBJ9u9B1v3A_c003/000490.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_HBJ9u9B1v3A_c003/000491.json",
+      "action_a": "shoot",
+      "action_b": "rebound",
+      "gid_a": 7,
+      "gid_b": 12,
+      "iou": 0.3302811439983669,
+      "bbox_a": [
+        490.667,
+        309.333,
+        565.333,
+        527.333
+      ],
+      "bbox_b": [
+        441.333,
+        347.333,
+        542.0,
+        555.333
+      ]
+    },
+    {
+      "sample": "v_I-tZTTBt3rc_c002",
+      "frame_idx_a": 689,
+      "frame_idx_b": 690,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_I-tZTTBt3rc_c002/000689.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_I-tZTTBt3rc_c002/000690.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 11,
+      "gid_b": 2,
+      "iou": 0.8384587463654587,
+      "bbox_a": [
+        686.0,
+        262.0,
+        806.0,
+        398.667
+      ],
+      "bbox_b": [
+        676.0,
+        262.667,
+        798.0,
+        402.0
+      ]
+    },
+    {
+      "sample": "v_InvO0NFpSIw_c602",
+      "frame_idx_a": 250,
+      "frame_idx_b": 251,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_InvO0NFpSIw_c602/000250.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_InvO0NFpSIw_c602/000251.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 5,
+      "gid_b": 0,
+      "iou": 0.8601293551802895,
+      "bbox_a": [
+        490.0,
+        428.667,
+        598.0,
+        603.333
+      ],
+      "bbox_b": [
+        500.667,
+        427.333,
+        602.0,
+        604.0
+      ]
+    },
+    {
+      "sample": "v_InvO0NFpSIw_c605",
+      "frame_idx_a": 78,
+      "frame_idx_b": 79,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_InvO0NFpSIw_c605/000078.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_InvO0NFpSIw_c605/000079.json",
+      "action_a": "screen",
+      "action_b": "noball",
+      "gid_a": 8,
+      "gid_b": 6,
+      "iou": 0.35893582074446323,
+      "bbox_a": [
+        423.333,
+        338.0,
+        540.0,
+        512.667
+      ],
+      "bbox_b": [
+        376.667,
+        310.667,
+        508.0,
+        464.667
+      ]
+    },
+    {
+      "sample": "v_It_vvQR6RPM_c004",
+      "frame_idx_a": 222,
+      "frame_idx_b": 223,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_It_vvQR6RPM_c004/000222.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_It_vvQR6RPM_c004/000223.json",
+      "action_a": "hold",
+      "action_b": "noball",
+      "gid_a": 5,
+      "gid_b": 9,
+      "iou": 0.0,
+      "bbox_a": [
+        539.333,
+        388.0,
+        623.333,
+        542.667
+      ],
+      "bbox_b": [
+        746.0,
+        335.333,
+        822.0,
+        481.333
+      ]
+    },
+    {
+      "sample": "v_It_vvQR6RPM_c012",
+      "frame_idx_a": 581,
+      "frame_idx_b": 582,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_It_vvQR6RPM_c012/000581.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_It_vvQR6RPM_c012/000582.json",
+      "action_a": "rebound",
+      "action_b": "hold",
+      "gid_a": 13,
+      "gid_b": 10,
+      "iou": 0.9479583777054351,
+      "bbox_a": [
+        770.667,
+        442.0,
+        894.667,
+        594.667
+      ],
+      "bbox_b": [
+        771.333,
+        436.0,
+        895.333,
+        594.0
+      ]
+    },
+    {
+      "sample": "v_JbiWR0AWKys_c002",
+      "frame_idx_a": 157,
+      "frame_idx_b": 158,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_JbiWR0AWKys_c002/000157.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_JbiWR0AWKys_c002/000158.json",
+      "action_a": "screen",
+      "action_b": "noball",
+      "gid_a": 5,
+      "gid_b": 2,
+      "iou": 0.0,
+      "bbox_a": [
+        373.0,
+        362.0,
+        501.0,
+        554.0
+      ],
+      "bbox_b": [
+        510.0,
+        293.0,
+        584.0,
+        455.0
+      ]
+    },
+    {
+      "sample": "v_JbiWR0AWKys_c005",
+      "frame_idx_a": 286,
+      "frame_idx_b": 287,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_JbiWR0AWKys_c005/000286.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_JbiWR0AWKys_c005/000287.json",
+      "action_a": "noball",
+      "action_b": "shoot",
+      "gid_a": 16,
+      "gid_b": 19,
+      "iou": 0.2716873212583413,
+      "bbox_a": [
+        769.0,
+        376.0,
+        898.0,
+        500.0
+      ],
+      "bbox_b": [
+        772.0,
+        424.0,
+        862.0,
+        602.0
+      ]
+    },
+    {
+      "sample": "v_K5PFNpiP5aY_c001",
+      "frame_idx_a": 294,
+      "frame_idx_b": 295,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_K5PFNpiP5aY_c001/000294.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_K5PFNpiP5aY_c001/000295.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 7,
+      "gid_b": 6,
+      "iou": 0.8634803423971414,
+      "bbox_a": [
+        498.667,
+        384.667,
+        648.0,
+        634.0
+      ],
+      "bbox_b": [
+        488.667,
+        386.667,
+        642.667,
+        644.0
+      ]
+    },
+    {
+      "sample": "v_SHFVKZ6HJc8_c004",
+      "frame_idx_a": 444,
+      "frame_idx_b": 445,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_SHFVKZ6HJc8_c004/000444.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_SHFVKZ6HJc8_c004/000445.json",
+      "action_a": "noball",
+      "action_b": "hold",
+      "gid_a": 22,
+      "gid_b": 16,
+      "iou": 0.0,
+      "bbox_a": [
+        954.0,
+        424.667,
+        1068.667,
+        605.333
+      ],
+      "bbox_b": [
+        1076.667,
+        460.667,
+        1156.0,
+        633.333
+      ]
+    },
+    {
+      "sample": "v_SHFVKZ6HJc8_c004",
+      "frame_idx_a": 444,
+      "frame_idx_b": 445,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_SHFVKZ6HJc8_c004/000444.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_SHFVKZ6HJc8_c004/000445.json",
+      "action_a": "screen",
+      "action_b": "hold",
+      "gid_a": 26,
+      "gid_b": 16,
+      "iou": 0.0,
+      "bbox_a": [
+        918.667,
+        386.667,
+        991.333,
+        562.667
+      ],
+      "bbox_b": [
+        1076.667,
+        460.667,
+        1156.0,
+        633.333
+      ]
+    },
+    {
+      "sample": "v_SHFVKZ6HJc8_c005",
+      "frame_idx_a": 536,
+      "frame_idx_b": 537,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_SHFVKZ6HJc8_c005/000536.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_SHFVKZ6HJc8_c005/000537.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 11,
+      "gid_b": 9,
+      "iou": 0.9352188895299339,
+      "bbox_a": [
+        405.333,
+        402.0,
+        541.333,
+        543.333
+      ],
+      "bbox_b": [
+        400.667,
+        404.0,
+        539.333,
+        544.0
+      ]
+    },
+    {
+      "sample": "v_SHFVKZ6HJc8_c010",
+      "frame_idx_a": 151,
+      "frame_idx_b": 152,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_SHFVKZ6HJc8_c010/000151.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_SHFVKZ6HJc8_c010/000152.json",
+      "action_a": "hold",
+      "action_b": "noball",
+      "gid_a": 8,
+      "gid_b": 13,
+      "iou": 0.015891120704823566,
+      "bbox_a": [
+        817.333,
+        322.0,
+        924.667,
+        434.667
+      ],
+      "bbox_b": [
+        919.333,
+        350.0,
+        1020.0,
+        516.667
+      ]
+    },
+    {
+      "sample": "v_SHFVKZ6HJc8_c012",
+      "frame_idx_a": 245,
+      "frame_idx_b": 246,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_SHFVKZ6HJc8_c012/000245.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_SHFVKZ6HJc8_c012/000246.json",
+      "action_a": "rebound",
+      "action_b": "hold",
+      "gid_a": 18,
+      "gid_b": 15,
+      "iou": 0.8048738717612949,
+      "bbox_a": [
+        394.0,
+        362.0,
+        540.0,
+        490.667
+      ],
+      "bbox_b": [
+        382.0,
+        363.333,
+        526.667,
+        495.333
+      ]
+    },
+    {
+      "sample": "v_UPbRcF0SSo0_c004",
+      "frame_idx_a": 398,
+      "frame_idx_b": 399,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_UPbRcF0SSo0_c004/000398.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_UPbRcF0SSo0_c004/000399.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 11,
+      "gid_b": 10,
+      "iou": 0.9101936582251543,
+      "bbox_a": [
+        453.0,
+        278.0,
+        546.0,
+        422.0
+      ],
+      "bbox_b": [
+        448.0,
+        278.0,
+        544.0,
+        419.0
+      ]
+    },
+    {
+      "sample": "v_V4tIg2zSbWU_c004",
+      "frame_idx_a": 344,
+      "frame_idx_b": 345,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_V4tIg2zSbWU_c004/000344.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_V4tIg2zSbWU_c004/000345.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 6,
+      "gid_b": 5,
+      "iou": 0.7236882716049383,
+      "bbox_a": [
+        571.0,
+        320.0,
+        684.0,
+        498.0
+      ],
+      "bbox_b": [
+        565.0,
+        308.0,
+        703.0,
+        486.0
+      ]
+    },
+    {
+      "sample": "v_V4tIg2zSbWU_c006",
+      "frame_idx_a": 273,
+      "frame_idx_b": 274,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_V4tIg2zSbWU_c006/000273.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_V4tIg2zSbWU_c006/000274.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 2,
+      "gid_b": 1,
+      "iou": 0.839769647696477,
+      "bbox_a": [
+        454.0,
+        328.0,
+        528.0,
+        462.0
+      ],
+      "bbox_b": [
+        452.0,
+        323.0,
+        534.0,
+        467.0
+      ]
+    },
+    {
+      "sample": "v_V4tIg2zSbWU_c010",
+      "frame_idx_a": 173,
+      "frame_idx_b": 174,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_V4tIg2zSbWU_c010/000173.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_V4tIg2zSbWU_c010/000174.json",
+      "action_a": "hold",
+      "action_b": "screen",
+      "gid_a": 9,
+      "gid_b": 14,
+      "iou": 0.0,
+      "bbox_a": [
+        155.0,
+        304.0,
+        281.0,
+        496.0
+      ],
+      "bbox_b": [
+        299.0,
+        260.0,
+        412.0,
+        441.0
+      ]
+    },
+    {
+      "sample": "v_aVfJwdQxCsU_c006",
+      "frame_idx_a": 86,
+      "frame_idx_b": 87,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_aVfJwdQxCsU_c006/000086.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_aVfJwdQxCsU_c006/000087.json",
+      "action_a": "pass",
+      "action_b": "screen",
+      "gid_a": 1,
+      "gid_b": 8,
+      "iou": 0.815121412803532,
+      "bbox_a": [
+        798.0,
+        371.0,
+        862.0,
+        583.0
+      ],
+      "bbox_b": [
+        795.0,
+        372.0,
+        854.0,
+        588.0
+      ]
+    },
+    {
+      "sample": "v_bQNDRprvpus_c010",
+      "frame_idx_a": 138,
+      "frame_idx_b": 139,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_bQNDRprvpus_c010/000138.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_bQNDRprvpus_c010/000139.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 6,
+      "gid_b": 5,
+      "iou": 0.7766990291262136,
+      "bbox_a": [
+        514.0,
+        275.0,
+        601.0,
+        495.0
+      ],
+      "bbox_b": [
+        512.0,
+        270.0,
+        586.0,
+        501.0
+      ]
+    },
+    {
+      "sample": "v_cLvwGLrAheU_c001",
+      "frame_idx_a": 231,
+      "frame_idx_b": 232,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_cLvwGLrAheU_c001/000231.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_cLvwGLrAheU_c001/000232.json",
+      "action_a": "noball",
+      "action_b": "pass",
+      "gid_a": 15,
+      "gid_b": 2,
+      "iou": 0.03540519276160504,
+      "bbox_a": [
+        897.0,
+        304.0,
+        980.0,
+        416.0
+      ],
+      "bbox_b": [
+        845.0,
+        282.0,
+        903.0,
+        394.0
+      ]
+    },
+    {
+      "sample": "v_cLvwGLrAheU_c008",
+      "frame_idx_a": 104,
+      "frame_idx_b": 105,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_cLvwGLrAheU_c008/000104.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_cLvwGLrAheU_c008/000105.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 10,
+      "gid_b": 5,
+      "iou": 0.8096885813148789,
+      "bbox_a": [
+        782.0,
+        352.0,
+        821.0,
+        479.0
+      ],
+      "bbox_b": [
+        780.0,
+        344.0,
+        825.0,
+        478.0
+      ]
+    },
+    {
+      "sample": "v_cLvwGLrAheU_c008",
+      "frame_idx_a": 164,
+      "frame_idx_b": 165,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_cLvwGLrAheU_c008/000164.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_cLvwGLrAheU_c008/000165.json",
+      "action_a": "noball",
+      "action_b": "pass",
+      "gid_a": 18,
+      "gid_b": 2,
+      "iou": 0.0,
+      "bbox_a": [
+        699.0,
+        359.0,
+        772.0,
+        486.0
+      ],
+      "bbox_b": [
+        852.0,
+        385.0,
+        937.0,
+        549.0
+      ]
+    },
+    {
+      "sample": "v_cLvwGLrAheU_c008",
+      "frame_idx_a": 338,
+      "frame_idx_b": 339,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_cLvwGLrAheU_c008/000338.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_cLvwGLrAheU_c008/000339.json",
+      "action_a": "screen",
+      "action_b": "noball",
+      "gid_a": 15,
+      "gid_b": 19,
+      "iou": 0.3407893921556478,
+      "bbox_a": [
+        874.0,
+        277.0,
+        957.0,
+        410.0
+      ],
+      "bbox_b": [
+        823.0,
+        285.0,
+        929.0,
+        385.0
+      ]
+    },
+    {
+      "sample": "v_cLvwGLrAheU_c010",
+      "frame_idx_a": 135,
+      "frame_idx_b": 136,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_cLvwGLrAheU_c010/000135.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_cLvwGLrAheU_c010/000136.json",
+      "action_a": "pass",
+      "action_b": "screen",
+      "gid_a": 3,
+      "gid_b": 11,
+      "iou": 0.0,
+      "bbox_a": [
+        205.0,
+        291.0,
+        268.0,
+        389.0
+      ],
+      "bbox_b": [
+        508.0,
+        314.0,
+        549.0,
+        441.0
+      ]
+    },
+    {
+      "sample": "v_en2wx__oWmE_c002",
+      "frame_idx_a": 38,
+      "frame_idx_b": 39,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_en2wx__oWmE_c002/000038.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_en2wx__oWmE_c002/000039.json",
+      "action_a": "pass",
+      "action_b": "noball",
+      "gid_a": 8,
+      "gid_b": 1,
+      "iou": 0.5860024638127502,
+      "bbox_a": [
+        176.0,
+        319.0,
+        317.0,
+        489.0
+      ],
+      "bbox_b": [
+        180.0,
+        302.0,
+        298.0,
+        448.0
+      ]
+    },
+    {
+      "sample": "v_f6a3B499nwY_c003",
+      "frame_idx_a": 715,
+      "frame_idx_b": 716,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_f6a3B499nwY_c003/000715.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_f6a3B499nwY_c003/000716.json",
+      "action_a": "hold",
+      "action_b": "noball",
+      "gid_a": 9,
+      "gid_b": 14,
+      "iou": 0.0,
+      "bbox_a": [
+        266.667,
+        296.667,
+        340.0,
+        420.0
+      ],
+      "bbox_b": [
+        477.333,
+        299.333,
+        530.667,
+        441.333
+      ]
+    },
+    {
+      "sample": "v_fL2LfHQIwsY_c004",
+      "frame_idx_a": 1441,
+      "frame_idx_b": 1442,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_fL2LfHQIwsY_c004/001441.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_fL2LfHQIwsY_c004/001442.json",
+      "action_a": "shoot",
+      "action_b": "rebound",
+      "gid_a": 18,
+      "gid_b": 46,
+      "iou": 0.1574148014662744,
+      "bbox_a": [
+        382.667,
+        290.0,
+        484.667,
+        542.0
+      ],
+      "bbox_b": [
+        313.333,
+        320.667,
+        412.667,
+        532.667
+      ]
+    },
+    {
+      "sample": "v_fL2LfHQIwsY_c005",
+      "frame_idx_a": 430,
+      "frame_idx_b": 431,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_fL2LfHQIwsY_c005/000430.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_fL2LfHQIwsY_c005/000431.json",
+      "action_a": "noball",
+      "action_b": "shoot",
+      "gid_a": 2,
+      "gid_b": 10,
+      "iou": 0.32659796199261354,
+      "bbox_a": [
+        466.667,
+        321.333,
+        550.667,
+        468.0
+      ],
+      "bbox_b": [
+        507.333,
+        326.667,
+        574.0,
+        439.333
+      ]
+    },
+    {
+      "sample": "v_fL2LfHQIwsY_c010",
+      "frame_idx_a": 146,
+      "frame_idx_b": 147,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_fL2LfHQIwsY_c010/000146.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_fL2LfHQIwsY_c010/000147.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 2,
+      "gid_b": 4,
+      "iou": 0.9100678043167244,
+      "bbox_a": [
+        335.333,
+        428.0,
+        422.667,
+        552.0
+      ],
+      "bbox_b": [
+        336.667,
+        427.333,
+        429.333,
+        552.0
+      ]
+    },
+    {
+      "sample": "v_gdtetu4nnZc_c006",
+      "frame_idx_a": 148,
+      "frame_idx_b": 149,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_gdtetu4nnZc_c006/000148.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_gdtetu4nnZc_c006/000149.json",
+      "action_a": "hold",
+      "action_b": "noball",
+      "gid_a": 7,
+      "gid_b": 13,
+      "iou": 0.0,
+      "bbox_a": [
+        467.333,
+        348.0,
+        548.0,
+        498.667
+      ],
+      "bbox_b": [
+        552.667,
+        332.0,
+        636.667,
+        461.333
+      ]
+    },
+    {
+      "sample": "v_hDBjIvCw7Kk_c001",
+      "frame_idx_a": 265,
+      "frame_idx_b": 266,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_hDBjIvCw7Kk_c001/000265.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_hDBjIvCw7Kk_c001/000266.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 5,
+      "gid_b": 14,
+      "iou": 0.8567782172430298,
+      "bbox_a": [
+        397.333,
+        410.0,
+        498.667,
+        564.667
+      ],
+      "bbox_b": [
+        398.0,
+        409.333,
+        510.0,
+        570.667
+      ]
+    },
+    {
+      "sample": "v_iO0QqaR5E24_c006",
+      "frame_idx_a": 204,
+      "frame_idx_b": 205,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_iO0QqaR5E24_c006/000204.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_iO0QqaR5E24_c006/000205.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 10,
+      "gid_b": 2,
+      "iou": 0.8240163283819028,
+      "bbox_a": [
+        608.0,
+        380.0,
+        696.0,
+        549.0
+      ],
+      "bbox_b": [
+        610.0,
+        377.0,
+        710.0,
+        550.0
+      ]
+    },
+    {
+      "sample": "v_iO0QqaR5E24_c008",
+      "frame_idx_a": 122,
+      "frame_idx_b": 123,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_iO0QqaR5E24_c008/000122.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_iO0QqaR5E24_c008/000123.json",
+      "action_a": "noball",
+      "action_b": "pass",
+      "gid_a": 23,
+      "gid_b": 5,
+      "iou": 0.0,
+      "bbox_a": [
+        448.0,
+        296.0,
+        548.0,
+        433.0
+      ],
+      "bbox_b": [
+        553.0,
+        216.0,
+        612.0,
+        406.0
+      ]
+    },
+    {
+      "sample": "v_iO0QqaR5E24_c008",
+      "frame_idx_a": 609,
+      "frame_idx_b": 610,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_iO0QqaR5E24_c008/000609.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_iO0QqaR5E24_c008/000610.json",
+      "action_a": "rebound",
+      "action_b": "hold",
+      "gid_a": 27,
+      "gid_b": 12,
+      "iou": 0.8162677703797013,
+      "bbox_a": [
+        658.0,
+        357.0,
+        734.0,
+        549.0
+      ],
+      "bbox_b": [
+        662.0,
+        360.0,
+        745.0,
+        549.0
+      ]
+    },
+    {
+      "sample": "v_iO0QqaR5E24_c008",
+      "frame_idx_a": 695,
+      "frame_idx_b": 696,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_iO0QqaR5E24_c008/000695.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_iO0QqaR5E24_c008/000696.json",
+      "action_a": "hold",
+      "action_b": "hold",
+      "gid_a": 12,
+      "gid_b": 17,
+      "iou": 0.8128793877012405,
+      "bbox_a": [
+        426.0,
+        299.0,
+        491.0,
+        413.0
+      ],
+      "bbox_b": [
+        427.0,
+        303.0,
+        483.0,
+        416.0
+      ]
+    },
+    {
+      "sample": "v_jZY5cZWGWKE_c003",
+      "frame_idx_a": 951,
+      "frame_idx_b": 952,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_jZY5cZWGWKE_c003/000951.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_jZY5cZWGWKE_c003/000952.json",
+      "action_a": "noball",
+      "action_b": "shoot",
+      "gid_a": 25,
+      "gid_b": 28,
+      "iou": 0.0,
+      "bbox_a": [
+        481.333,
+        358.0,
+        559.333,
+        491.333
+      ],
+      "bbox_b": [
+        329.333,
+        341.333,
+        398.0,
+        460.667
+      ]
+    },
+    {
+      "sample": "v_jZY5cZWGWKE_c010",
+      "frame_idx_a": 75,
+      "frame_idx_b": 76,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_jZY5cZWGWKE_c010/000075.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_jZY5cZWGWKE_c010/000076.json",
+      "action_a": "noball",
+      "action_b": "contest",
+      "gid_a": 18,
+      "gid_b": 8,
+      "iou": 0.8626835143622273,
+      "bbox_a": [
+        528.667,
+        327.333,
+        623.333,
+        472.667
+      ],
+      "bbox_b": [
+        531.333,
+        331.333,
+        616.0,
+        474.0
+      ]
+    },
+    {
+      "sample": "v_jZj2UkglB9E_c003",
+      "frame_idx_a": 232,
+      "frame_idx_b": 233,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_jZj2UkglB9E_c003/000232.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_jZj2UkglB9E_c003/000233.json",
+      "action_a": "hold",
+      "action_b": "contest",
+      "gid_a": 2,
+      "gid_b": 0,
+      "iou": 0.217160480003933,
+      "bbox_a": [
+        716.0,
+        281.333,
+        803.333,
+        460.667
+      ],
+      "bbox_b": [
+        760.667,
+        228.0,
+        871.333,
+        474.0
+      ]
+    },
+    {
+      "sample": "v_jZj2UkglB9E_c004",
+      "frame_idx_a": 651,
+      "frame_idx_b": 652,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_jZj2UkglB9E_c004/000651.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_jZj2UkglB9E_c004/000652.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 15,
+      "gid_b": 6,
+      "iou": 0.9449587366972368,
+      "bbox_a": [
+        380.667,
+        371.333,
+        478.667,
+        546.667
+      ],
+      "bbox_b": [
+        377.333,
+        372.0,
+        480.667,
+        546.667
+      ]
+    },
+    {
+      "sample": "v_jZj2UkglB9E_c008",
+      "frame_idx_a": 518,
+      "frame_idx_b": 519,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_jZj2UkglB9E_c008/000518.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_jZj2UkglB9E_c008/000519.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 10,
+      "gid_b": 3,
+      "iou": 0.8856906154052592,
+      "bbox_a": [
+        854.667,
+        337.333,
+        942.667,
+        485.333
+      ],
+      "bbox_b": [
+        848.0,
+        330.0,
+        942.667,
+        485.333
+      ]
+    },
+    {
+      "sample": "v_kguAFIlDI4E_c012",
+      "frame_idx_a": 383,
+      "frame_idx_b": 384,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_kguAFIlDI4E_c012/000383.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_kguAFIlDI4E_c012/000384.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 6,
+      "gid_b": 2,
+      "iou": 0.6564827406522925,
+      "bbox_a": [
+        477.333,
+        465.333,
+        548.667,
+        606.667
+      ],
+      "bbox_b": [
+        470.0,
+        460.667,
+        530.667,
+        608.0
+      ]
+    },
+    {
+      "sample": "v_kguAFIlDI4E_c013",
+      "frame_idx_a": 209,
+      "frame_idx_b": 210,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_kguAFIlDI4E_c013/000209.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_kguAFIlDI4E_c013/000210.json",
+      "action_a": "hold",
+      "action_b": "hold",
+      "gid_a": 5,
+      "gid_b": 4,
+      "iou": 0.8570263830512703,
+      "bbox_a": [
+        246.667,
+        324.0,
+        296.667,
+        452.0
+      ],
+      "bbox_b": [
+        242.667,
+        327.333,
+        297.333,
+        457.333
+      ]
+    },
+    {
+      "sample": "v_kguAFIlDI4E_c013",
+      "frame_idx_a": 209,
+      "frame_idx_b": 210,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_kguAFIlDI4E_c013/000209.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_kguAFIlDI4E_c013/000210.json",
+      "action_a": "hold",
+      "action_b": "screen",
+      "gid_a": 5,
+      "gid_b": 10,
+      "iou": 0.0,
+      "bbox_a": [
+        246.667,
+        324.0,
+        296.667,
+        452.0
+      ],
+      "bbox_b": [
+        339.333,
+        320.667,
+        456.667,
+        456.0
+      ]
+    },
+    {
+      "sample": "v_l4OIaX8_D10_c001",
+      "frame_idx_a": 561,
+      "frame_idx_b": 562,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_l4OIaX8_D10_c001/000561.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_l4OIaX8_D10_c001/000562.json",
+      "action_a": "hold",
+      "action_b": "pass",
+      "gid_a": 9,
+      "gid_b": 7,
+      "iou": 0.8388409961685823,
+      "bbox_a": [
+        543.0,
+        335.0,
+        615.0,
+        451.0
+      ],
+      "bbox_b": [
+        553.0,
+        336.0,
+        615.0,
+        449.0
+      ]
+    },
+    {
+      "sample": "v_l4OIaX8_D10_c002",
+      "frame_idx_a": 367,
+      "frame_idx_b": 368,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_l4OIaX8_D10_c002/000367.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_l4OIaX8_D10_c002/000368.json",
+      "action_a": "hold",
+      "action_b": "contest",
+      "gid_a": 8,
+      "gid_b": 27,
+      "iou": 0.010209694052939155,
+      "bbox_a": [
+        820.0,
+        312.0,
+        928.0,
+        423.0
+      ],
+      "bbox_b": [
+        696.0,
+        274.0,
+        823.0,
+        411.0
+      ]
+    },
+    {
+      "sample": "v_l9wUr-CK1Y4_c008",
+      "frame_idx_a": 989,
+      "frame_idx_b": 990,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_l9wUr-CK1Y4_c008/000989.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_l9wUr-CK1Y4_c008/000990.json",
+      "action_a": "hold",
+      "action_b": "hold",
+      "gid_a": 15,
+      "gid_b": 11,
+      "iou": 0.7670831380531263,
+      "bbox_a": [
+        603.333,
+        280.667,
+        680.667,
+        384.0
+      ],
+      "bbox_b": [
+        586.667,
+        282.667,
+        678.667,
+        380.667
+      ]
+    },
+    {
+      "sample": "v_rYquruzj9hc_c001",
+      "frame_idx_a": 338,
+      "frame_idx_b": 339,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_rYquruzj9hc_c001/000338.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_rYquruzj9hc_c001/000339.json",
+      "action_a": "hold",
+      "action_b": "noball",
+      "gid_a": 16,
+      "gid_b": 25,
+      "iou": 0.0,
+      "bbox_a": [
+        166.0,
+        269.0,
+        240.0,
+        413.0
+      ],
+      "bbox_b": [
+        364.0,
+        262.0,
+        468.0,
+        441.0
+      ]
+    },
+    {
+      "sample": "v_rYquruzj9hc_c002",
+      "frame_idx_a": 75,
+      "frame_idx_b": 76,
+      "json_a": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_rYquruzj9hc_c002/000075.json",
+      "json_b": "/storage/wangxinxing/code/action_data_analysis/data/MultiSports_step2_json/videos/v_rYquruzj9hc_c002/000076.json",
+      "action_a": "rebound",
+      "action_b": "hold",
+      "gid_a": 7,
+      "gid_b": 6,
+      "iou": 0.7955756929637526,
+      "bbox_a": [
+        442.0,
+        301.0,
+        577.0,
+        511.0
+      ],
+      "bbox_b": [
+        438.0,
+        289.0,
+        591.0,
+        500.0
+      ]
+    }
+  ]
+}
