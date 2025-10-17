@@ -1,6 +1,8 @@
 ### scripts 目录说明（SportsHHI）
 
-本目录包含与 SportsHHI 数据相关的解析、转换、对齐与合并的脚本。多数脚本依赖项目源码路径，请在运行前设置：
+本目录包含与 SportsHHI 数据相关的解析、转换、对齐与合并的脚本。
+有很多代码是为了对齐SportsHHI和MultiSports两个数据集的情况，比较两者差异，方便合并
+多数脚本依赖项目源码路径，请在运行前设置：
 
 ```bash
 export PYTHONPATH="src:${PYTHONPATH}"
@@ -138,10 +140,96 @@ python -m datasets.sportshhi.scripts.extract_basketball
 - 示例：
 ```bash
 datasets/sportshhi/scripts/align_merge_multisports_sportshhi.sh \
-  --multispor ts-root /path/to/MultiSports_json \
+  --multisports-root /path/to/MultiSports_json \
   --sportshhi-root   /path/to/SportsHHI_json \
   --out             /path/to/MultiSports_SportsHHI_overlap_json \
   --iou 0.99
+```
+
+---
+
+#### 9) NxM 框对 IoU 直方图（逐帧累加）
+- 文件：`count_pair_overlaps.py`
+- 作用：
+  - 基于对齐 CSV，按对齐起点同步遍历两侧帧，对每帧将两侧全部框两两配对，计算 IoU 并累计到 10 桶直方图（[0.0,0.1), …, [0.9,1.0]），输出总对数与每桶计数。
+- 主要参数：`--alignment_csv`、`--multisports_root`、`--sportshhi_root`、`--video-id`、`--allow_status`、`--max_frames`、`--out_root`
+- 产物：标准输出 JSON；若指定 `--out_root`，写入 `__stats__/pair_iou_hist[.<video_id>].{json,csv}`。
+- 示例：
+```bash
+python -m datasets.sportshhi.scripts.count_pair_overlaps \
+  --alignment_csv /path/to/alignment_search.csv \
+  --multisports_root /path/to/MultiSports_json \
+  --sportshhi_root /path/to/SportsHHI_json \
+  --out_root /path/to/out
+```
+
+---
+
+#### 10) 动作配对计数（IoU > 阈值）
+- 文件：`count_action_pair_overlaps.py`
+- 作用：
+  - 统计跨域框对在 IoU 大于阈值时的动作配对 `(sh_action, ms_action)` 出现次数；可选通过 `ms/sh` 的 pbtxt 将动作名映射为 `id` 并同时输出 by-id 计数。
+- 主要参数：`--alignment_csv`、`--multisports_root`、`--sportshhi_root`、`--threshold`、`--allow_status`、`--video-id`、`--max_frames`、`--out_root`、`--ms_pbtxt`、`--sh_pbtxt`
+- 产物：标准输出 JSON；若指定 `--out_root`，写入 `__stats__/action_pair_counts[.<video_id>].{json,csv}`。
+- 示例：
+```bash
+python -m datasets.sportshhi.scripts.count_action_pair_overlaps \
+  --alignment_csv /path/to/alignment_search.csv \
+  --multisports_root /path/to/MultiSports_json \
+  --sportshhi_root /path/to/SportsHHI_json \
+  --threshold 0.9 --out_root /path/to/out \
+  --ms_pbtxt /path/to/ms.pbtxt --sh_pbtxt /path/to/sh.pbtxt
+```
+
+---
+
+#### 11) 导出超过阈值的跨域配对明细（首个视频）
+- 文件：`dump_pairs_over_threshold.py`
+- 作用：
+  - 对对齐 CSV 中首个视频，从对齐起点向后遍历，输出所有 IoU>阈值 的跨域配对框（含动作）。支持 `--per_pair` 将每个配对单独一行输出（便于 JSONL 消费）。
+- 主要参数：`--alignment_csv`、`--multisports_root`、`--sportshhi_root`、`--threshold`、`--allow_status`、`--max_frames`、`--out_root`、`--per_pair`
+- 产物：标准输出 JSON/JSONL；若指定 `--out_root`，写入 `__stats__/pairs_over_threshold[.per_pair].<video_id>.jsonl`。
+- 示例：
+```bash
+python -m datasets.sportshhi.scripts.dump_pairs_over_threshold \
+  --alignment_csv /path/to/alignment_search.csv \
+  --multisports_root /path/to/MultiSports_json \
+  --sportshhi_root /path/to/SportsHHI_json \
+  --threshold 0.99 --per_pair --out_root /path/to/out
+```
+
+---
+
+#### 12) 查找首个高 IoU 配对
+- 文件：`find_first_high_iou_pair.py`
+- 作用：
+  - 在对齐 CSV 首行视频中，自起始帧向后查找第一处满足 `IoU ≥ 阈值` 的配对，并输出该时刻的所有配对，按 IoU 降序排列。
+- 主要参数：`--alignment_csv`、`--multisports_root`、`--sportshhi_root`、`--threshold`、`--max_frames`
+- 产物：标准输出 JSON（如未命中则给出提示）。
+- 示例：
+```bash
+python -m datasets.sportshhi.scripts.find_first_high_iou_pair \
+  --alignment_csv /path/to/alignment_search.csv \
+  --multisports_root /path/to/MultiSports_json \
+  --sportshhi_root /path/to/SportsHHI_json \
+  --threshold 0.95
+```
+
+---
+
+#### 13) 比较结尾：谁先结束及多出帧数分布
+- 文件：`compare_endings_from_alignment.py`
+- 作用：
+  - 从对齐起点向后同步遍历两侧帧，逐视频统计“谁先结束”、公共长度、各自可用总长与多出帧数；并汇总“多出 N 帧”的分布（`ms_more_counts`/`sh_more_counts`）。
+- 主要参数：`--alignment_csv`、`--multisports_root`、`--sportshhi_root`、`--allow_status`、`--video-id`、`--out_csv`、`--counts_csv`
+- 产物：标准输出摘要；如提供 `--out_csv`/`--counts_csv`，分别写出逐视频明细与聚合计数。
+- 示例：
+```bash
+python -m datasets.sportshhi.scripts.compare_endings_from_alignment \
+  --alignment_csv /path/to/alignment_search.csv \
+  --multisports_root /path/to/MultiSports_json \
+  --sportshhi_root /path/to/SportsHHI_json \
+  --out_csv /path/to/out/per_video.csv --counts_csv /path/to/out/counts.csv
 ```
 
 ---

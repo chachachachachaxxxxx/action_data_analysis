@@ -179,6 +179,46 @@ python -m action_data_analysis.cli.main subset-std \
 
 注意：若某些动作在原数据中本就不足 N，则 `subset_summary.json` 的 `missing_actions` 会列出仍然不足的类别，以便后续数据补充或调参。
 
+## 导出样例与上下文帧（export-samples）
+
+从包含 LabelMe JSON 的目录中，按类别随机抽取样例，并导出每个样例的上下文帧到结构化目录（复制图片与 JSON）。
+
+- 输入：
+  - 支持传入包含 LabelMe JSON 的叶子目录，或其上层目录（会自动递归发现叶子目录）；可一次传多个路径。
+- 输出结构：
+  - `<out>/<dataset-name>/<action>/<sample_id>/*.{jpg,png,json}`
+  - `sample_id` 形如：`<orig_sample>__<center_frame_stem>`（由样例目录名与被选中的中心帧名组成）
+- 主要参数：
+  - `--dataset-name`：数据集名称，用于输出目录命名（必需）
+  - `--per-class`：每类抽取的样例数（默认 3）
+  - `--context`：上下文帧数（两侧各扩展 N 帧，总计 2N+1，默认 6）
+
+示例：
+
+```bash
+# 基本用法：从若干目录中发现叶子目录，按类别抽样并导出上下文帧
+python -m action_data_analysis.cli.main export-samples \
+  /path/to/LabelMe_root_a /path/to/LabelMe_root_b \
+  --out /path/to/output/json \
+  --dataset-name MultiSports \
+  --per-class 3 --context 6
+
+# 绝对路径示例（MultiSports）
+python -m action_data_analysis.cli.main export-samples \
+  /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted \
+  --out /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json_std_converted_samples \
+  --dataset-name MultiSports --per-class 5 --context 6
+```
+
+后续处理（可选）：若需要将多个导出结果平铺合并到一个目录，并重写 JSON 的 `imagePath`，可使用 `merge-flatten`：
+
+```bash
+python -m action_data_analysis.cli.main merge-flatten \
+  /path/to/output/json/MultiSports \
+  /path/to/output/json/FineSports \
+  --out /path/to/output/flat
+```
+
 ## 导出 tube 视频（std → MP4）
 
 将标准格式（std）的帧与 LabelMe JSON 按 tube（轨迹）导出为 MP4，固定 25fps、224x224。支持两种策略：

@@ -70,6 +70,7 @@ datasets/multisports/results/
 
 # SpaceJam
 datasets/spacejam
+!datasets/spacejam/scripts/
 
 # SportsHHI
 datasets/sportshhi/annotations/
