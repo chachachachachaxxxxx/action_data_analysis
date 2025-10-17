@@ -1,5 +1,5 @@
 ### 前置条件
-- **环境**: 已安装 Python 3.9+，并可运行 `python`；已安装 `opencv-python` 仅在使用可视化脚本时需要。
+- **环境**: 已安装 Python 3.10+，并可运行 `python`；已安装 `opencv-python` 仅在使用可视化脚本时需要。
 - **项目路径**: `/storage/wangxinxing/code/action_data_analysis`
 - **权限**: 首次使用前为脚本添加执行权限：
 ```bash
@@ -7,7 +7,7 @@ chmod +x scripts/*.sh
 ```
 
 ### 一键导出并合并（推荐）
-- **目标**: 从 FineSports 与 SportsHHI 各数据集中，按类别随机采样每类 3 例，并为每例导出中心帧及前后各 6 帧（共最多 13 帧），复制原始 `json` 与 `img`；随后将两者平铺合并到单一目录并重命名。
+- **目标**: 从 MultiSports、FineSports 与 SportsHHI 数据集中，按类别随机采样每类 3 例，并为每例导出中心帧及前后各 6 帧（共最多 13 帧），复制原始 `json` 与 `img`；随后将结果平铺合并到单一目录并重命名。
 ```bash
 zsh scripts/export_merged_samples.sh \
   --multisports-root /storage/wangxinxing/code/action_data_analysis/data/MultiSports_json \
@@ -18,7 +18,7 @@ zsh scripts/export_merged_samples.sh \
   --per-class 3 --context 6
 ```
 - **输出**:
-  - 按数据集分开的样例：`output/json/{FineSports,SportsHHI}/<action>/<sample_id>/*.{jpg,json}`
+  - 按数据集分开的样例：`output/json/{MultiSports,FineSports,SportsHHI}/<action>/<sample_id>/*.{jpg,json}`
   - 平铺合并后的样例：`output/merged/{dataset}__{action}__{sample_id}__{basename}.{ext}`
 
 ### 单数据集一键导出并合并
@@ -32,7 +32,11 @@ zsh scripts/export_merged_samples_multisports.sh \
 ```
 - FineSports：
 ```bash
-
+zsh scripts/export_merged_samples_finesports.sh \
+  --fine-root /storage/wangxinxing/code/action_data_analysis/data/FineSports_json \
+  --out-json /storage/wangxinxing/code/action_data_analysis/output/json2 \
+  --out-merged /storage/wangxinxing/code/action_data_analysis/output/merged_FineSports \
+  --per-class 3 --context 6
 ```
 - SportsHHI：
 ```bash
@@ -58,7 +62,7 @@ zsh scripts/export_samples.sh \
   --out /storage/wangxinxing/code/action_data_analysis/output/json \
   --dataset-name SportsHHI \
   --per-class 3 --context 6 \
-  /storage/wangxinxing/code/action_data_analysis/data/SportsHHI_json
+  /storage/wangxinxing/code/action_data_analysis/data/SportsHHI_main_json
 ```
 3) 合并平铺：
 ```bash
@@ -126,7 +130,7 @@ zsh scripts/visualize_samples.sh --out /storage/wangxinxing/code/action_data_ana
   /storage/wangxinxing/code/action_data_analysis/data/FineSports_json/*/*(/)
 
 zsh scripts/visualize_samples.sh --out /storage/wangxinxing/code/action_data_analysis/output/vis_sportshhi --per-class 3 --context 12 \
-  /storage/wangxinxing/code/action_data_analysis/data/SportsHHI_json/*/
+  /storage/wangxinxing/code/action_data_analysis/data/SportsHHI_main_json/*/
 ```
 
 ### 参数说明（核心）
